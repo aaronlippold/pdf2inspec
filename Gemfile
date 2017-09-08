@@ -3,4 +3,5 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'docsplit'
-gem 'parslet'
+gem 'inspec'
+gem 'word_wrap'
