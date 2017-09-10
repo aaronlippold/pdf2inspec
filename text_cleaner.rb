@@ -16,7 +16,7 @@ class TextCleaner
     clean_pagenum = controls_data.gsub(/(\d{1,3}\|Page|\d{1,3} \| P a g e)/, '').to_s
     clean_section_header = clean_pagenum.gsub(/\s\n\d{1}\s.*(?:.*\n)*?(?=\d\.\d)/, "\n\n").to_s
     clean_whitespace = clean_section_header.gsub(/\s\n.*?(?!d\.)/, "\n").to_s
-    add_whitespace_between_controls = clean_whitespace.gsub(/(.*?(?=\d\.\d{1}.*?(?<=\)$))|(.*?(?=\d\.\d{2}.*?(?<=\)$)))|(.*?(?=\d\.\d{1}.*\n.*?(?<=\)$)))|(.*?(?=\d\.\d{2}.*\n.*?(?<=\)$))))/, "\n\n").to_s
+    add_whitespace_between_controls = clean_whitespace.gsub(/(.*?(?=\d\.\d{1}.*?(?<=\)$))|(.*?(?=\d\.\d{2}.*?(?<=\)$)))|(.*?(?=\d\.\d{1}.*\n.*?(?<=\)$)))|(.*?(?=\d\.\d{2}.*\n.*?(?<=\)$))))/, "\n").to_s
     clean_data = add_whitespace_between_controls
     return clean_data
   end

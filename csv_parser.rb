@@ -4,7 +4,6 @@
 
 require 'csv'
 require 'word_wrap'
-require 'pry'
 require 'json'
 
 class CsvParser
@@ -42,7 +41,6 @@ class CsvParser
         @controls.push(control)
       end
     end
-    binding.pry
   rescue => e
     puts "Exception: #{e.message}"
     puts 'Existing...'
