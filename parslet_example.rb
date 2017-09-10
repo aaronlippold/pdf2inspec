@@ -45,13 +45,14 @@ class DegreeParser < Parslet::Parser
   rule(:blank_line) { spaces >> newline >> spaces }
   rule(:newline) { str("\r").maybe >> str("\n") }
   rule(:semicolon) { str(';') }
-  rule(:lparn) { str('(') }
-  rule(:rparn) { str(')') }
   rule(:spaces) { space.repeat(0) }
   rule(:space) { str(' ') }
+
   rule :integer do
     match('[0-9]').repeat(1).as(:integer)
   end
+  rule(:lparn) { str('(') }
+  rule(:rparn) { str(')') }
   rule(:dot) { str('.') }
   rule :real do
     integer.repeat(1) >>
