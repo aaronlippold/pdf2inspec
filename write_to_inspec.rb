@@ -1,3 +1,7 @@
+#!/usr/local/bin/ruby
+# encoding: utf-8
+# author: Mohamed El-Sharkawi
+
 require 'inspec/objects'
 require 'word_wrap'
 
@@ -11,11 +15,13 @@ class WriteToInSpec
     generate_controls
   end
 
+  # sets max length of a line before line break
   def wrap(s, width = 78)
     s.gsub!(/\\r/, "   \n")
     WordWrap.ww(s.to_s, width)
   end
 
+  # converts passed in data into InSpec format
   def parse_controls
     @array_of_controls.each do |contr|
       print '.'
@@ -36,6 +42,7 @@ class WriteToInSpec
     end
   end
 
+  # Writes InSpec controls to file
   def generate_controls
     Dir.mkdir 'controls' unless Dir.exist?('controls')
     @controls.each do |control|
