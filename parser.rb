@@ -1,3 +1,6 @@
+require 'parslet'
+require 'parslet/convenience'
+
 class TextParser
   def initialize
     @extracted_data = Array.new
@@ -104,5 +107,138 @@ class TextParser
 
 end
 
+class ControlParser < Parslet::Parser
+
+  # TODO: Build the sentence ( not perfect but the general idea )
+  # a sentense -> space.maybe >> words >> newline.maybe >> words >> ( newline.maybe || dot )
+  #'words >> word >> space word.maybe(0)' ;
+  # word -> chars >> char.repeat(1) >> char.maybe
+
+  # rule(:header) { (real.as(:section_num) >> sentences.as(:tile) >> score.as(:score)).as(:header) }
+  #
+  # controls(:controls) { control >> newline >> control.maybe }
+  #
+  # control(:control) {
+  #   header >>
+  #   applicability >>
+  #   description >>
+  #   audit >>
+  #   remediation >>
+  #   impact >>
+  #   default_value >>
+  #   references >>
+  #   cis_control
+  #   }
+  # end
+
+  rule :blank_line do
+    spaces >> newline >> spaces
+  end
+
+  rule :newline do
+    str("\r").maybe >> str("\n")
+  end
+
+  rule :semicolon do
+    str(';')
+  end
+
+  rule :spaces do
+    space.repeat(0)
+  end
+
+  rule :space do
+    str(' ')
+  end
+
+  rule :space? do
+    space.maybe
+  end
+
+  rule :anyChar do
+    match('.')
+  end
+
+  rule :integer do
+    match('[0-9]').repeat(1)
+  end
+
+  rule :word do
+    match('[a-zA-Z0-9/]').repeat(1)
+  end
+
+  rule :words do
+    (space? >> word >> (space | dot).maybe).repeat(1)
+  end
+
+  rule(:cr)         { str('\n') }
+  rule(:eol?)       { cr | any.absent?  }
+  rule(:line_body)  { (eol?.absent? >> any).repeat(1) }
+  rule(:line_end)   { str('.\n') }
+  rule(:line)       { line_body >> line_end.absent? >> eol? }
+  rule(:lines)      { line.as(:line).repeat(0) }
+
+  rule :lparn do
+    str('(')
+  end
+  rule :rparn do
+    str(')')
+  end
+  rule :dot do
+    str('.')
+  end
+  rule :real do
+    integer.repeat(1) >>
+        dot >>
+        integer.repeat(1)
+  end
+  rule(:score) { lparn >> word >> rparn }
+  rule(:header) { (real.as(:section_num) >> words.as(:title) >> score.as(:score)).as(:header) >> newline }
+  rule :applicabilityValue do
+    (word >>
+        space >>
+        integer.repeat(1) >>
+        space >>
+        str('-') >>
+        words).as(:applicability) >>
+        newline
+  end
+  rule :applicability do
+    str('Profile Applicability:') >>
+        newline >>
+        applicabilityValue
+  end
+  rule :description do
+    str('Description:') >>
+        newline >>
+        lines.as(:description)
+  end
+  rule :rationale do
+    str('Rationale:') >>
+        newline
+  end
+  rule :control do
+    header >>
+        applicability >>
+        description
+  end
+  root :control
+end
+
+testStr = '1.1 Ensure a separate partition for containers has been created (Scored)
+Profile Applicability:
+Level 1 - Linux Host OS
+Description:
+All Docker containers and their data and metadata is stored under /var/lib/docker
+directory. By default, /var/lib/docker would be mounted under / or /var partitions based
+on availability.
+Rationale:
+'
 cis_text_file = TextParser.new.storeFileToArray
 table_of_contents = TextParser.new.parseTableOfContents(cis_text_file)
+begin
+  test = ControlParser.new.parse_with_debug(testStr)
+rescue Parslet::ParseFailed => error
+  puts error.parse_failure_cause.ascii_tree
+end
+puts test
