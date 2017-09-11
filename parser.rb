@@ -164,19 +164,17 @@ class ControlParser < Parslet::Parser
   end
 
   rule :word do
-    match('[a-zA-Z0-9/]').repeat(1)
+    match('[a-zA-Z0-9/,\.]').repeat(1)
   end
 
   rule :words do
     (space? >> word >> (space | dot).maybe).repeat(1)
   end
 
-  rule(:cr)         { str('\n') }
-  rule(:eol?)       { cr | any.absent?  }
-  rule(:line_body)  { (eol?.absent? >> any).repeat(1) }
-  rule(:line_end)   { str('.\n') }
-  rule(:line)       { line_body >> line_end.absent? >> eol? }
-  rule(:lines)      { line.as(:line).repeat(0) }
+  rule(:eol?)       { str("\n").maybe }
+  rule(:line_body)  { (str("\n").absent? >> any).repeat(1) }
+  rule(:line)       { line_body >> eol? }
+  rule(:lines)      { line.as(:line).repeat(1) }
 
   rule :lparn do
     str('(')
@@ -211,16 +209,20 @@ class ControlParser < Parslet::Parser
   rule :description do
     str('Description:') >>
         newline >>
-        lines.as(:description)
+        lines.as(:description) >>
+        newline
   end
   rule :rationale do
     str('Rationale:') >>
+        newline >>
+        lines.as(:rationale) >>
         newline
   end
   rule :control do
     header >>
         applicability >>
-        description
+        description >>
+        rationale
   end
   root :control
 end
@@ -232,13 +234,19 @@ Description:
 All Docker containers and their data and metadata is stored under /var/lib/docker
 directory. By default, /var/lib/docker would be mounted under / or /var partitions based
 on availability.
+
 Rationale:
+Docker depends on /var/lib/docker as the default directory where all Docker related files,
+including the images, are stored. This directory might fill up fast and soon Docker and the
+host could become unusable. So, it is advisable to create a separate partition (logical
+volume) for storing Docker files.
+
 '
 cis_text_file = TextParser.new.storeFileToArray
 table_of_contents = TextParser.new.parseTableOfContents(cis_text_file)
+parser = ControlParser.new
 begin
-  test = ControlParser.new.parse_with_debug(testStr)
+  parse = p parser.parse(testStr)
 rescue Parslet::ParseFailed => error
-  puts error.parse_failure_cause.ascii_tree
+  puts error.cause.ascii_tree
 end
-puts test
