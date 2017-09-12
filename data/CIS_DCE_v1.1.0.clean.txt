@@ -1,5 +1,3 @@
-
-
 1.1 Ensure a separate partition for containers has been created (Scored)
 Profile Applicability:
 Level 1 - Linux Host OS
