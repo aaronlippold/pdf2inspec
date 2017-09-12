@@ -61,6 +61,7 @@ class DegreeParser < Parslet::Parser
     dot.maybe >>
     integer.repeat(1).maybe
   end
+
   rule(:score) { lparn >> words >> rparn }
 
   # TODO: Build the sentence ( not perfect but the general idea )
@@ -94,7 +95,7 @@ University of North Carolina
 
 string2 ="1.1 Ensure a separate partition for containers has been created (Scored)"
 
-test = DegreeParser.new.parse_with_debug(string1)
+test = DegreeParser.new.parse(string1)
 
 ap test
 end
