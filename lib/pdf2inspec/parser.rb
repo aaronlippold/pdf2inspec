@@ -3,27 +3,97 @@ require 'parslet/convenience'
 
 class ControlParser < Parslet::Parser
 
-  # TODO: Build the sentence ( not perfect but the general idea )
-  # a sentense -> space.maybe >> words >> newline.maybe >> words >> ( newline.maybe || dot )
-  #'words >> word >> space word.maybe(0)' ;
-  # word -> chars >> char.repeat(1) >> char.maybe
+  root :controls
 
-  # rule(:header) { (real.as(:section_num) >> sentences.as(:tile) >> score.as(:score)).as(:header) }
-  #
-  # controls(:controls) { control >> newline >> control.maybe }
-  #
-  # control(:control) {
-  #   header >>
-  #   applicability >>
-  #   description >>
-  #   audit >>
-  #   remediation >>
-  #   impact >>
-  #   default_value >>
-  #   references >>
-  #   cis_control
-  #   }
-  # end
+  rule :controls do
+    control.repeat(1)
+  end
+
+  rule :control do
+    header >>
+    applicability >>
+    description >>
+    rationale >>
+    audit >>
+    remediation >>
+    impact >>
+    default_value >>
+    references >>
+    cis_controls
+  end
+
+  rule(:header) do
+    (real.as(:section_num) >>
+    words.as(:title) >>
+    newline.maybe >>
+    score.as(:score)).as(:header) >>
+    newline
+  end
+
+  rule :applicability do
+    str('Profile Applicability:') >>
+    newline >>
+    applicabilityValue
+  end
+
+  rule :applicabilityValue do
+    (word >>
+     space >>
+     integer.repeat(1) >>
+     space >>
+     str('-') >>
+     words).as(:applicability) >>
+    newline
+  end
+
+  rule :description do
+    str('Description:') >>
+    newline >>
+    lines('Rationale:').as(:description)
+  end
+
+  rule :rationale do
+    str('Rationale:') >>
+    newline >>
+    lines('Audit:').as(:rationale)
+  end
+
+  rule :audit do
+    str('Audit:') >>
+    newline >>
+    lines('Remediation:').as(:audit)
+  end
+
+  rule :remediation do
+    str('Remediation:') >>
+    newline >>
+    lines('Impact:').as(:remediation)
+  end
+
+  rule :impact do
+    str('Impact:') >>
+    newline >>
+    lines('Default Value:').as(:impact)
+  end
+
+  rule :default_value do
+    str('Default Value:') >>
+    newline >>
+    lines('References:').as(:default_value)
+  end
+
+  rule :references do
+    str('References:') >>
+    newline >>
+    lines('CIS Controls:').as(:references)
+  end
+
+  rule :cis_controls do
+    str('CIS Controls:') >>
+    newline >>
+    lines("\n").as(:cis_controls) >>
+    newline
+  end
 
   rule :blank_line do
     spaces >> newline >> spaces
@@ -49,6 +119,7 @@ class ControlParser < Parslet::Parser
     space.maybe
   end
 
+  # @FIXME doesn't the parslet `any` function alreayd take care of this?
   rule :anyChar do
     match('.')
   end
@@ -77,95 +148,27 @@ class ControlParser < Parslet::Parser
     line(ending).as(:line).repeat(1)
   end
 
-  rule(:eol?)       { str("\n").maybe }
+  rule(:eol?) { str("\n").maybe }
+
+  rule :dot do
+    str('.')
+  end
+
+  rule :real do
+    integer.repeat(1) >>
+    dot >>
+    integer.repeat(1)
+  end
+
+  rule(:score) { lparn >> word >> rparn }
 
   rule :lparn do
     str('(')
   end
+
   rule :rparn do
     str(')')
   end
-  rule :dot do
-    str('.')
-  end
-  rule :real do
-    integer.repeat(1) >>
-        dot >>
-        integer.repeat(1)
-  end
-  rule(:score) { lparn >> word >> rparn }
-  rule(:header) { (real.as(:section_num) >> words.as(:title) >> newline.maybe >> score.as(:score)).as(:header) >> newline}
-  rule :applicabilityValue do
-    (word >>
-        space >>
-        integer.repeat(1) >>
-        space >>
-        str('-') >>
-        words).as(:applicability) >>
-        newline
-  end
-  rule :applicability do
-    str('Profile Applicability:') >>
-        newline >>
-        applicabilityValue
-  end
-  rule :description do
-    str('Description:') >>
-        newline >>
-        lines('Rationale:').as(:description)
-  end
-  rule :rationale do
-    str('Rationale:') >>
-        newline >>
-        lines('Audit:').as(:rationale)
-  end
-  rule :audit do
-    str('Audit:') >>
-        newline >>
-        lines('Remediation:').as(:audit)
-  end
-  rule :remediation do
-    str('Remediation:') >>
-        newline >>
-        lines('Impact:').as(:remediation)
-  end
-  rule :impact do
-    str('Impact:') >>
-        newline >>
-        lines('Default Value:').as(:impact)
-  end
-  rule :default_value do
-    str('Default Value:') >>
-        newline >>
-        lines('References:').as(:default_value)
-  end
-  rule :references do
-    str('References:') >>
-        newline >>
-        lines('CIS Controls:').as(:references)
-  end
-  rule :cis_controls do
-    str('CIS Controls:') >>
-        newline >>
-        lines("\n").as(:cis_controls) >>
-        newline
-  end
-  rule :control do
-    header >>
-        applicability >>
-        description >>
-        rationale >>
-        audit >>
-        remediation >>
-        impact >>
-        default_value >>
-        references >>
-        cis_controls
-  end
-  rule :controls do
-    control.repeat(1)
-  end
-  root :controls
 end
 
 testStr = '1.1 Ensure a separate partition for containers has been created (Scored)
@@ -202,6 +205,7 @@ Controlled Access Based on the Need to Know
 '
 
 parser = ControlParser.new
+
 begin
   parse = p parser.parse(testStr)
 rescue Parslet::ParseFailed => error
