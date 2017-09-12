@@ -85,7 +85,7 @@ class ControlParser < Parslet::Parser
         integer.repeat(1)
   end
   rule(:score) { lparn >> word >> rparn }
-  rule(:header) { (real.as(:section_num) >> words.as(:title) >> score.as(:score)).as(:header) >> newline }
+  rule(:header) { (real.as(:section_num) >> words.as(:title) >> newline.maybe >> score.as(:score)).as(:header) >> newline >> newline}
   rule :applicabilityValue do
     (word >>
         space >>
@@ -98,7 +98,8 @@ class ControlParser < Parslet::Parser
   rule :applicability do
     str('Profile Applicability:') >>
         newline >>
-        applicabilityValue
+        applicabilityValue >>
+        newline
   end
   rule :description do
     str('Description:') >>
@@ -106,49 +107,73 @@ class ControlParser < Parslet::Parser
         lines.as(:description) >>
         newline
   end
-  rule :check_text do
+  rule :rationale do
+    str('Rationale:') >>
+        newline >>
+        lines.as(:rationale) >>
+        newline
+  end
+  rule :audit do
     str('Audit:') >>
         newline >>
-        lines.as(:check_text) >>
+        lines.as(:audit) >>
         newline
   end
-  rule :fix_text do
+  rule :remediation do
     str('Remediation:') >>
         newline >>
-        lines.as(:fix_text) >>
+        lines.as(:remediation) >>
         newline
   end
-  rule :ref do
+  rule :impact do
+    str('Impact:') >>
+        newline >>
+        lines.as(:impact) >>
+        newline
+  end
+  rule :default_value do
+    str('Default Value:') >>
+        newline >>
+        lines.as(:default_value) >>
+        newline
+  end
+  rule :references do
     str('References:') >>
         newline >>
-        lines.as(:ref) >>
+        lines.as(:references) >>
         newline
   end
-  rule :cis do
+  rule :cis_controls do
     str('CIS Controls:') >>
         newline >>
-        lines.as(:cis) >>
+        lines.as(:cis_controls) >>
         newline
   end
   rule :control do
     header >>
         applicability >>
         description >>
-        check_text >>
-        fix_text >>
-        ref >>
-        cis
+        rationale >>
+        audit >>
+        remediation >>
+        impact >>
+        default_value >>
+        references >>
+        cis_controls
   end
   root :control
 end
 
 testStr = '1.1 Ensure a separate partition for containers has been created (Scored)
+
 Profile Applicability:
 Level 1 - Linux Host OS
+
 Description:
 All Docker containers and their data and metadata is stored under /var/lib/docker
 directory. By default, /var/lib/docker would be mounted under / or /var partitions based
 on availability.
+
 Rationale:
 Docker depends on /var/lib/docker as the default directory where all Docker related files,
 including the images, are stored. This directory might fill up fast and soon Docker and the
@@ -164,8 +189,10 @@ Remediation:
 For new installations, create a separate partition for /var/lib/docker mount point. For
 systems that were previously installed, use the Logical Volume Manager (LVM) to create
 partitions.
+
 Impact:
 None.
+
 Default Value:
 By default, /var/lib/docker would be mounted under / or /var partitions based on
 availability.
