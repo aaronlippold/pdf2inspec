@@ -24,7 +24,7 @@ class ControlParser < Parslet::Parser
 
   rule(:header) do
     (real.as(:section_num) >>
-    words.as(:title) >>
+    words.as(:title).repeat(1) >>
     newline.maybe >>
     score.as(:score)).as(:header) >>
     newline
@@ -119,6 +119,10 @@ class ControlParser < Parslet::Parser
     space.maybe
   end
 
+  rule :hyphen do
+    str('-')
+  end
+
   # @FIXME doesn't the parslet `any` function alreayd take care of this?
   rule :anyChar do
     match('.')
@@ -133,7 +137,7 @@ class ControlParser < Parslet::Parser
   end
 
   rule :words do
-    (space? >> word >> (space | dot).maybe).repeat(1)
+    (space? >> word >> (space | dot | hyphen).maybe).repeat(1) >> (newline >> (word >> space).repeat(1)).maybe
   end
 
   def line_body(ending)
@@ -160,7 +164,7 @@ class ControlParser < Parslet::Parser
     integer.repeat(1)
   end
 
-  rule(:score) { lparn >> word >> rparn }
+  rule(:score) { lparn >> scored >> rparn }
 
   rule :lparn do
     str('(')
@@ -168,6 +172,10 @@ class ControlParser < Parslet::Parser
 
   rule :rparn do
     str(')')
+  end
+
+  rule :scored do
+    (str('Scored') | str('Not Scored'))
   end
 end
 
@@ -202,12 +210,147 @@ CIS Controls:
 14 Controlled Access Based on the Need to Know
 Controlled Access Based on the Need to Know
 
+1.2 Ensure the container host has been Hardened (Not Scored)
+Profile Applicability:
+Level 1 - Linux Host OS
+Description:
+Containers run on a Linux host. A container host can run one or more containers. It is of
+utmost importance to harden the host to mitigate host security misconfiguration.
+Rationale:
+You should follow infrastructure security best practices and harden your host OS. Keeping
+the host system hardened would ensure that the host vulnerabilities are mitigated. Not
+hardening the host system could lead to security exposures and breaches.
+Audit:
+Ensure that the host specific security guidelines are followed. Ask the system
+administrators which security benchmark does current host system comply with. Ensure
+that the host systems actually comply with that host specific security benchmark.
+Remediation:
+You may consider various CIS Security Benchmarks for your container host. If you have
+other security guidelines or regulatory requirements to adhere to, please follow them as
+suitable in your environment.
+Additionally, you can run a kernel with grsecurity and PaX. This would add many safety
+checks, both at compile-time and run-time. It is also designed to defeat many exploits and
+has powerful security features. These features do not require Docker-specific
+configuration, since those security features apply system-wide, independent of containers.
+Impact:
+None.
+Default Value:
+By default, host has factory settings. It is not hardened.
+References:
+1. https://docs.docker.com/engine/security/security/
+2.
+3.
+4.
+5.
+6.
+7.
+https://learn.cisecurity.org/benchmarks
+https://docs.docker.com/engine/security/security/#other-kernel-security-features
+https://grsecurity.net/
+https://en.wikibooks.org/wiki/Grsecurity
+https://pax.grsecurity.net/
+http://en.wikipedia.org/wiki/PaX
+CIS Controls:
+3 Secure Configurations for Hardware and Software on Mobile Devices, Laptops,
+Workstations, and Servers
+Secure Configurations for Hardware and Software on Mobile Devices, Laptops,
+Workstations, and Servers
+
 '
+
+extracted_data = File.read('../../data/CIS_DCE_v1.1.0.clean.txt')
 
 parser = ControlParser.new
 
 begin
+  puts "############"
+  puts "Parse Data"
+  puts "############"
   parse = p parser.parse(testStr)
+  # parse = p parser.parse(extracted_data)
 rescue Parslet::ParseFailed => error
   puts error.parse_failure_cause.ascii_tree
 end
+
+class Trans < Parslet::Transform
+  rule(:line => simple(:text)) { text }
+end
+
+transformed_data = Trans.new.apply(parse)
+puts "############"
+puts "Transformed Data"
+puts "############"
+puts transformed_data
+
+class PrepareData
+  def initialize(transformed_data)
+    @transform_data = transformed_data
+    @prepared_data = Array.new
+
+    parse_data
+
+    puts @prepared_data
+  end
+
+  def convert_str(value)
+    value.to_s
+  end
+
+  def parse_data
+    @transform_data.each do |control|
+      current_control = {}
+      description = ""
+      fix_text = ""
+      control.each do |key, value|
+        case key
+          when /header/
+            title = ""
+            value.each do |headerkey, headervalue|
+              case headerkey
+                when /section_num/
+                  current_control[:id] = convert_str(headervalue)
+                when /title/
+                  title += headervalue
+                when /score/
+                  title += headervalue
+                  current_control[:title] = title
+              end
+            end
+          when /description/
+            description += convert_str(value[0])
+          when  /rationale/
+            description += convert_str(value[0])
+            current_control[:desc] = description
+          when /references/
+            current_control[:ref] = convert_str(value[0])
+          when /applicability/
+            level, applicability = convert_str(value).split(' - ', 2)
+            level = level.gsub("Level ", "")
+            current_control[:level] = level
+            current_control[:applicability] = applicability
+          when /cis_controls/
+            # @FIXME need to change logic to account for csv lookup to complete :cis entry and create :nist entry
+            cis_controls, trash= convert_str(value[0]).split(" ", 2)
+            current_control[:cis] = cis_controls
+          when /audit/
+            current_control[:check_text] = convert_str(value[0])
+          when /remediation/
+            fix_text += convert_str(value[0])
+          when /impact/
+            fix_text += convert_str(value[0])
+          when /default_value/
+            fix_text += convert_str(value[0])
+            current_control[:fix_text] = fix_text
+          else
+            puts "nothing"
+        end
+      end
+      @prepared_data << current_control
+    end
+  end
+end
+
+puts "############"
+puts "Prepared Data"
+puts "############"
+puts PrepareData.new(transformed_data)
