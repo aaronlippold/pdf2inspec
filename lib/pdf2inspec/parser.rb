@@ -283,7 +283,7 @@ class Trans < Parslet::Transform
   rule(:header => simple(:header), :applicability => simple(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
        :audit => sequence(:audit), :remediation => sequence(:remediation), :impact => sequence(:impact), :default_value => sequence(:default_value),
        :references => sequence(:references), :cis_controls => sequence(:cis_controls)) { [header.to_s , applicability.to_s,
-        description[0].to_s + rationale[0].to_s, audit[0].to_s, remediation[0].to_s, impact[0].to_s, default_value[0].to_s,
+        description[0].to_s + rationale[0].to_s, audit[0].to_s, remediation[0].to_s + impact[0].to_s + default_value[0].to_s,
         references[0].to_s, cis_controls[0].to_s] }
 end
 
@@ -310,58 +310,25 @@ class PrepareData
   def parse_data
     @transform_data.each do |control|
       current_control = {}
-      description = ""
-      fix_text = ""
-      control.each do |key, value|
-        case key
-          when /header/
-            title = ""
-            value.each do |headerkey, headervalue|
-              case headerkey
-                when /section_num/
-                  current_control[:id] = convert_str(headervalue)
-                when /title/
-                  title += headervalue
-                when /score/
-                  title += headervalue
-                  current_control[:title] = title
-              end
-            end
-          when /description/
-            description += convert_str(value[0])
-          when  /rationale/
-            description += convert_str(value[0])
-            current_control[:desc] = description
-          when /references/
-            current_control[:ref] = convert_str(value[0])
-          when /applicability/
-            level, applicability = convert_str(value).split(' - ', 2)
-            level = level.gsub("Level ", "")
-            current_control[:level] = level
-            current_control[:applicability] = applicability
-          when /cis_controls/
-            # @FIXME need to change logic to account for csv lookup to complete :cis entry and create :nist entry
-            cis_controls, trash= convert_str(value[0]).split(" ", 2)
-            current_control[:cis] = cis_controls
-          when /audit/
-            current_control[:check_text] = convert_str(value[0])
-          when /remediation/
-            fix_text += convert_str(value[0])
-          when /impact/
-            fix_text += convert_str(value[0])
-          when /default_value/
-            fix_text += convert_str(value[0])
-            current_control[:fix_text] = fix_text
-          else
-            puts "nothing"
-        end
-      end
+      current_control[:id], current_control[:title] = control[0].to_s.split(' ', 2)
+      level, current_control[:applicability] = control[1].to_s.split(' - ', 2)
+      current_control[:level] = level.gsub('Level ', '')
+      current_control[:desc] = control[2].to_s
+      current_control[:check_text] = control[3].to_s
+      current_control[:fix_text] = control[4].to_s
+      current_control[:ref] = control[5].to_s
+
+      # @TODO: perform cis and nist look up on excel to create array output similar to this:
+      # cis_family: ['5', '6.1']  ## the 5 is what is extracted from the line below, the 6.1 is the version of the excel document
+      # nist: ['AC-6', '4']       ## the AC-6 is extracted from the excel as the corresponding nist control matching the cis_family_id, the 4 is the version of nist 800-53 controls
+      cis_family_id, _= control[6].to_s.split(' ', 2)
+
       @prepared_data << current_control
     end
   end
 end
 
-# puts "############"
-# puts "Prepared Data"
-# puts "############"
-# puts PrepareData.new(transformed_data)
+puts "############"
+puts "Prepared Data"
+puts "############"
+puts PrepareData.new(transformed_data)
