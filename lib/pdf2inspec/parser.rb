@@ -24,10 +24,14 @@ class ControlParser < Parslet::Parser
 
   rule(:header) do
     (real.as(:section_num) >>
-    words.as(:title).repeat(1) >>
+    title.as(:title) >>
     newline.maybe >>
     score.as(:score)).as(:header) >>
     newline
+  end
+
+  rule(:title) do
+    (str('(Scored)').absent? >> str('(Not Scored)').absent? >> str('(Not').absent?  >> (words | lparn | rparn)).repeat(1)
   end
 
   rule :applicability do
@@ -92,7 +96,7 @@ class ControlParser < Parslet::Parser
     str('CIS Controls:') >>
     newline >>
     lines("\n").as(:cis_controls) >>
-    newline
+    newline.maybe
   end
 
   rule :blank_line do
@@ -133,7 +137,7 @@ class ControlParser < Parslet::Parser
   end
 
   rule :word do
-    match('[a-zA-Z0-9/,\.]').repeat(1)
+    match('[a-zA-Z0-9/,\.:\'\"]').repeat(1)
   end
 
   rule :words do
@@ -153,6 +157,7 @@ class ControlParser < Parslet::Parser
   end
 
   rule(:eol?) { str("\n").maybe }
+  rule(:eof?) { any.absent? }
 
   rule :dot do
     str('.')
@@ -175,11 +180,11 @@ class ControlParser < Parslet::Parser
   end
 
   rule :scored do
-    (str('Scored') | str('Not Scored'))
+    (str('Scored') | str('Not Scored') | (str('Not') >> newline.maybe >> str('Scored')))
   end
 end
 
-testStr = '1.1 Ensure a separate partition for containers has been created (Scored)
+testStr = '2.13 Ensure operations on legacy registry (v1) are Disabled (Scored)
 Profile Applicability:
 Level 1 - Linux Host OS
 Description:
@@ -266,7 +271,7 @@ begin
   puts "############"
   puts "Parse Data"
   puts "############"
-  parse = p parser.parse(testStr)
+  parse = p parser.parse(extracted_data)
   # parse = p parser.parse(extracted_data)
 rescue Parslet::ParseFailed => error
   puts error.parse_failure_cause.ascii_tree
@@ -274,13 +279,19 @@ end
 
 class Trans < Parslet::Transform
   rule(:line => simple(:text)) { text }
+  rule(:section_num => simple(:section), :title => simple(:title), :score => simple(:score)) { section + title + score }
+  rule(:header => simple(:header), :applicability => simple(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
+       :audit => sequence(:audit), :remediation => sequence(:remediation), :impact => sequence(:impact), :default_value => sequence(:default_value),
+       :references => sequence(:references), :cis_controls => sequence(:cis_controls)) { [header.to_s , applicability.to_s,
+        description[0].to_s + rationale[0].to_s, audit[0].to_s, remediation[0].to_s, impact[0].to_s, default_value[0].to_s,
+        references[0].to_s, cis_controls[0].to_s] }
 end
 
 transformed_data = Trans.new.apply(parse)
 puts "############"
 puts "Transformed Data"
 puts "############"
-puts transformed_data
+p transformed_data
 
 class PrepareData
   def initialize(transformed_data)
@@ -350,7 +361,7 @@ class PrepareData
   end
 end
 
-puts "############"
-puts "Prepared Data"
-puts "############"
-puts PrepareData.new(transformed_data)
+# puts "############"
+# puts "Prepared Data"
+# puts "############"
+# puts PrepareData.new(transformed_data)
