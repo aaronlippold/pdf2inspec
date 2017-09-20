@@ -9,7 +9,8 @@ require_relative 'write_to_inspec'
 
 class MyCLI < Thor
   desc 'exec', 'pdf2inspec translates a PDF Security Control Speficication to Inspec Security Profile'
-  option :pdf, required: true, aliases: '-c'
+  option :pdf, required: true, aliases: '-f'
+  option :name, required: true, aliases: '-n' 
 
   def exec
     prepared_data = PrepareData.new(options[:pdf])
@@ -42,14 +43,14 @@ class MyCLI < Thor
   end
 
   map %w{--help -h} => :help
-  desc 'help', 'Help for using csv2inspec'
+  desc 'help', 'Help for using pdf2inspec'
   def help
-    puts "\tcsv2inspec translates CSV to Inspec controls\n\n"
-    puts "\t-c --csv : Path to DISA Stig style csv"
-    puts "\t-m --mapping : Path to yaml with mapping from CSV to Inspec Controls"
-    puts "\t-V --verbose : verbose run"
-    puts "\nexample: ./csv2inspec exec -c stig.csv -m mapping.yml\n\n"
-    puts "\nexample: './csv2inspec generate_map' to generate mapping template\n\n"
+    puts "\tpdf2inspec translates a PDF Secuirty Profile to Inspec controls\n\n"
+    puts "\t-f --pdf : Path and file of the PDF you would like to process"
+    puts "\t-n --name : The name for your new InSpec profile"
+    puts "\t-V --verbose : verbose run ( for when you need to see what's broken )"
+    puts "\nexample: ./pdf2inspec exec -f secureConfigruation.pdf -n my_inspec_profile\n\n"
+    puts "\nexample: ./pdf2inspec exec -f secureConfigruation.pdf -n my_inspec_profile --verbose\n\n"
   end
 
   map %w{--version -v} => :print_version

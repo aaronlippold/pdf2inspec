@@ -1,1 +1,1 @@
-parser.rb
+csv2inspec.rb
