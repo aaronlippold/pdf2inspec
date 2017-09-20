@@ -8,7 +8,7 @@ require 'inspec/objects'
 require 'word_wrap'
 #require 'yaml'
 
-class Csv2Inspec
+class Pdf2Inspec
   def initialize(csv_file, mapping_file, verbose)
     @csv_file = csv_file
     @mapping_file = mapping_file
