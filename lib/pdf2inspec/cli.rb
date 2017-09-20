@@ -1,20 +1,20 @@
 #!/usr/bin/env ruby
 # encoding: utf-8
-# author: Aaron Lippold
+# author: Matthew Dromazos
 
 require 'thor'
 require_relative 'version'
 require_relative 'pdf2inspec'
-
-# DTD_PATH = "checklist.dtd"
+require_relative 'write_to_inspec'
 
 class MyCLI < Thor
   desc 'exec', 'pdf2inspec translates a PDF Security Control Speficication to Inspec Security Profile'
-  option :csv, required: true, aliases: '-c'
-  option :mapping, required: true, aliases: '-m'
-  option :verbose, type: :boolean, aliases: '-V'
+  option :pdf, required: true, aliases: '-c'
+
   def exec
-    Pdf2Inspec.new(options[:csv], options[:mapping], options[:verbose])
+    prepared_data = PrepareData.new(options[:pdf])
+    puts prepared_data.transformed_data[1]
+    writer = WriteToInSpec.new(prepared_data)
   end
 
   desc 'generate_map', 'Generates mapping template from CSV to Inspec Controls'

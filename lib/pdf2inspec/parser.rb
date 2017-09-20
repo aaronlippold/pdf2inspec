@@ -1,6 +1,7 @@
 require 'parslet'
 require 'parslet/convenience'
 
+
 class ControlParser < Parslet::Parser
 
   root :controls
@@ -263,19 +264,19 @@ Workstations, and Servers
 
 '
 
-extracted_data = File.read('../../data/CIS_DCE_v1.1.0.clean.txt')
+# extracted_data = File.read('../../data/CIS_DCE_v1.1.0.clean.txt')
+#
+# parser = ControlParser.new
 
-parser = ControlParser.new
-
-begin
-  puts "############"
-  puts "Parse Data"
-  puts "############"
-  parse = p parser.parse(extracted_data)
-  # parse = p parser.parse(extracted_data)
-rescue Parslet::ParseFailed => error
-  puts error.parse_failure_cause.ascii_tree
-end
+# begin
+#   puts "############"
+#   puts "Parse Data"
+#   puts "############"
+#   parse = p parser.parse(extracted_data)
+#   # parse = p parser.parse(extracted_data)
+# rescue Parslet::ParseFailed => error
+#   puts error.parse_failure_cause.ascii_tree
+# end
 
 class Trans < Parslet::Transform
   rule(:line => simple(:text)) { text }
@@ -286,49 +287,47 @@ class Trans < Parslet::Transform
         description[0].to_s + rationale[0].to_s, audit[0].to_s, remediation[0].to_s + impact[0].to_s + default_value[0].to_s,
         references[0].to_s, cis_controls[0].to_s] }
 end
-
-transformed_data = Trans.new.apply(parse)
-puts "############"
-puts "Transformed Data"
-puts "############"
-p transformed_data
+#
+# transformed_data = Trans.new.apply(parse)
+# puts "############"
+# puts "Transformed Data"
+# puts "############"
+# p transformed_data
 
 class PrepareData
-  def initialize(transformed_data)
-    @transform_data = transformed_data
-    @prepared_data = Array.new
+  def initialize(file)
+    extracted_data = File.read(file)
 
-    parse_data
+    @parser = ControlParser.new
 
-    puts @prepared_data
+    data = parse(extracted_data)
+
+    @transformed_data = Trans.new.apply(data)
+  end
+
+  def transformed_data
+    @transformed_data
+  end
+
+  def parse(extracted_data)
+    begin
+      puts "############"
+      puts "Parse Data"
+      puts "############"
+      parse = @parser.parse(extracted_data)
+        # parse = p parser.parse(extracted_data)
+    rescue Parslet::ParseFailed => error
+      puts error.parse_failure_cause.ascii_tree
+    end
+
   end
 
   def convert_str(value)
     value.to_s
   end
-
-  def parse_data
-    @transform_data.each do |control|
-      current_control = {}
-      current_control[:id], current_control[:title] = control[0].to_s.split(' ', 2)
-      level, current_control[:applicability] = control[1].to_s.split(' - ', 2)
-      current_control[:level] = level.gsub('Level ', '')
-      current_control[:desc] = control[2].to_s
-      current_control[:check_text] = control[3].to_s
-      current_control[:fix_text] = control[4].to_s
-      current_control[:ref] = control[5].to_s
-
-      # @TODO: perform cis and nist look up on excel to create array output similar to this:
-      # cis_family: ['5', '6.1']  ## the 5 is what is extracted from the line below, the 6.1 is the version of the excel document
-      # nist: ['AC-6', '4']       ## the AC-6 is extracted from the excel as the corresponding nist control matching the cis_family_id, the 4 is the version of nist 800-53 controls
-      cis_family_id, _= control[6].to_s.split(' ', 2)
-
-      @prepared_data << current_control
-    end
-  end
 end
 
-puts "############"
-puts "Prepared Data"
-puts "############"
-puts PrepareData.new(transformed_data)
+# puts "############"
+# puts "Prepared Data"
+# puts "############"
+# puts PrepareData.new(transformed_data)
