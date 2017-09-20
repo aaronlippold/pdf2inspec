@@ -310,15 +310,11 @@ class PrepareData
   end
 
   def parse(extracted_data)
-    begin
       puts "############"
       puts "Parse Data"
       puts "############"
       parse = @parser.parse(extracted_data)
         # parse = p parser.parse(extracted_data)
-    rescue Parslet::ParseFailed => error
-      puts error.parse_failure_cause.ascii_tree
-    end
 
   end
 

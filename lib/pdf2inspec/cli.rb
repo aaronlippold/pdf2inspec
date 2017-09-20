@@ -15,7 +15,7 @@ class MyCLI < Thor
   def exec
     prepared_data = PrepareData.new(options[:pdf])
     puts prepared_data.transformed_data[1]
-    writer = WriteToInSpec.new(prepared_data)
+    #writer = WriteToInSpec.new(prepared_data)
   end
 
   desc 'generate_map', 'Generates mapping template from CSV to Inspec Controls'

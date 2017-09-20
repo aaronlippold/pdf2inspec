@@ -33,8 +33,7 @@ GEM
       method_source (~> 0.8)
       mixlib-log
       parallel (~> 1.9)
-      parslet (~> 1.5.0)
-      parslet (~> 1.8)
+      parslet (= 1.5.0)
       pry (~> 0)
       rainbow (~> 2)
       rspec (~> 3)
@@ -63,9 +62,8 @@ GEM
       mini_portile2 (~> 2.2.0)
     nori (2.6.0)
     parallel (1.12.0)
-    parslet (1.8.0)
-      blankslate (~> 2.0)
     parslet (1.5.0)
+      blankslate (~> 2.0)
     pry (0.10.4)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
@@ -132,7 +130,7 @@ DEPENDENCIES
   awesome_print
   docsplit
   inspec
-  parslet
+  parslet (~> 1.5)
   roo
   thor
   word_wrap

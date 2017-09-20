@@ -4,7 +4,7 @@ source "https://rubygems.org"
 gem 'inspec'
 gem 'docsplit'
 gem 'awesome_print'
-gem 'parslet'
+gem 'parslet', '~> 1.5'
 gem 'word_wrap'
 gem 'thor'
 gem 'roo'

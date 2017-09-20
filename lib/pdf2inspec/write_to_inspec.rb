@@ -77,6 +77,6 @@ None.
 Default Value:
 By default, host has factory settings. It is not hardened."}
 
-array_of_controls = [section_one_one, section_one_two]
+#array_of_controls = [section_one_one, section_one_two]
 
-WriteToInSpec.new(array_of_controls)
+#WriteToInSpec.new(array_of_controls)
