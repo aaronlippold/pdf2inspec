@@ -9,14 +9,12 @@ require_relative 'write_to_inspec'
 
 class MyCLI < Thor
   desc 'exec', 'pdf2inspec translates a PDF Security Control Speficication to Inspec Security Profile'
-  option :pdf, required: true, aliases: '-f'
+  option :pdf, required: true, aliases: '-p'
   option :excl, required: true, aliases: '-x'
   option :name, required: true, aliases: '-n' 
 
   def exec
-    prepared_data = PrepareData.new(options[:pdf], options[:excl], options[:name])
-    puts prepared_data.transformed_data[1]
-    #writer = WriteToInSpec.new(prepared_data)
+    pdf2inspec = Pdf2Inspec.new(options[:pdf], options[:excl], options[:name])
   end
 
   desc 'generate_map', 'Generates mapping template from CSV to Inspec Controls'

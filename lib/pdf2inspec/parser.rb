@@ -7,6 +7,7 @@ class ControlParser < Parslet::Parser
   root :controls
 
   rule :controls do
+    newline.maybe >>
     control.repeat(1)
   end
 
@@ -38,6 +39,7 @@ class ControlParser < Parslet::Parser
   rule :applicability do
     str('Profile Applicability:') >>
     newline >>
+    space? >>
     applicabilityValue
   end
 
@@ -283,9 +285,9 @@ class Trans < Parslet::Transform
   rule(:section_num => simple(:section), :title => simple(:title), :score => simple(:score)) { section + title + score }
   rule(:header => simple(:header), :applicability => simple(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
        :audit => sequence(:audit), :remediation => sequence(:remediation), :impact => sequence(:impact), :default_value => sequence(:default_value),
-       :references => sequence(:references), :cis_controls => sequence(:cis_controls)) { [header.to_s , applicability.to_s,
-        description[0].to_s + rationale[0].to_s, audit[0].to_s, remediation[0].to_s + impact[0].to_s + default_value[0].to_s,
-        references[0].to_s, cis_controls[0].to_s] }
+       :references => sequence(:references), :cis_controls => sequence(:cis_controls)) { {:title => header.to_s , :level => applicability.to_s,
+        :descr => description[0].to_s + rationale[0].to_s, :check => audit[0].to_s, :fix => remediation[0].to_s, :impact => impact[0].to_s, :default => default_value[0].to_s,
+        :ref => references[0].to_s, :cis => cis_controls[0].to_s} }
 end
 #
 # transformed_data = Trans.new.apply(parse)
@@ -295,12 +297,10 @@ end
 # p transformed_data
 
 class PrepareData
-  def initialize(file)
-    extracted_data = File.read(file)
-
+  def initialize(clean_text)
     @parser = ControlParser.new
 
-    data = parse(extracted_data)
+    data = parse(clean_text)
 
     @transformed_data = Trans.new.apply(data)
   end
@@ -309,13 +309,16 @@ class PrepareData
     @transformed_data
   end
 
-  def parse(extracted_data)
-      puts "############"
-      puts "Parse Data"
-      puts "############"
-      parse = @parser.parse(extracted_data)
+  def parse(clean_text)
+    begin
+      # puts "############"
+      # puts "Parse Data"
+      # puts "############"
+      parse = @parser.parse(clean_text)
         # parse = p parser.parse(extracted_data)
-
+    rescue Parslet::ParseFailed => error
+      puts error.parse_failure_cause.ascii_tree
+    end
   end
 
   def convert_str(value)

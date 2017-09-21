@@ -8,4 +8,5 @@ gem 'parslet', '~> 1.5'
 gem 'word_wrap'
 gem 'thor'
 gem 'roo'
-gem 'toml', :path => 'temp_hack/toml'
+gem 'toml', :path => 'temp_hack/'
+

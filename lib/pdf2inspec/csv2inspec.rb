@@ -6,49 +6,72 @@
 require 'nokogiri'
 require 'inspec/objects'
 require 'word_wrap'
+require_relative 'text_cleaner'
+require_relative 'extract_nist_cis_mapping'
+require_relative 'extract_pdf_text'
+require_relative 'parser'
 #require 'yaml'
 
 class Pdf2Inspec
-  def initialize(csv_file, mapping_file, verbose)
-    @csv_file = csv_file
-    @mapping_file = mapping_file
-    @verbose = verbose
+  def initialize(pdf_file, excl_file, profile_name)
+    @pdf_file = pdf_file
+    @excl_file = excl_file
+    @name = profile_name
 
     @controls = []
     @csv_handle = nil
     @cci_xml = nil
     @mapping = nil
+    @pdf_text = ''
+    @clean_text = ''
+    @transformed_data = ''
 
-    read_mapping
-    read_csv
-    read_cci_xml
+    read_pdf
+    clean_pdf_text
+    get_transformed_data
+    read_excl
+    create_skeleton
     parse_controls
     generate_controls
+    create_json
     puts "\nProcessed #{@controls.count} controls"
   end
 
-  def read_csv
-    @csv_handle = CSV.read(@csv_file, encoding: 'ISO8859-1')
-    @csv_handle.shift if @mapping['skip_csv_header']
-  rescue => e
-    puts "Exception: #{e.message}"
-    puts 'Existing...'
-    exit
+  private
+
+  def read_pdf
+    @pdf_text = ExtractPdfText.new(@pdf_file).extracted_text
   end
 
-  def read_mapping
-    @mapping = YAML.load_file(@mapping_file)
-  rescue => e
-    puts "Exception: #{e.message}"
-    puts 'Existing...'
-    exit
+  def clean_pdf_text
+    @clean_text = TextCleaner.new.clean_data(@pdf_text)
   end
 
-  def read_cci_xml
-    @cci_xml = Nokogiri::XML(File.open('data/U_CCI_List.xml'))
-    @cci_xml.remove_namespaces!
-  rescue => e
-    puts "Exception: #{e.message}"
+  def get_transformed_data
+    @transformed_data = PrepareData.new(@clean_text).transformed_data
+  end
+
+  def read_excl
+    excel = ExtractNistMappings.new(@excl_file)
+  # rescue => e
+  #   puts "Exception: #{e.message}"
+  #   puts 'Existing...'
+  #   exit
+  end
+
+  # sets max length of a line before line break
+  def wrap(s, width = 78)
+    s.gsub!(/\\r/, "   \n")
+    WordWrap.ww(s.to_s, width)
+  end
+
+  def create_skeleton
+    system("inspec init profile #{@name}")
+    system("rm #{@name}/controls/example.rb")
+  end
+
+  def create_json
+    system("inspec json #{@name} | jq . | tee #{@name}-overview.json")
   end
 
   def get_impact(severity)
@@ -60,44 +83,36 @@ class Pdf2Inspec
     impact
   end
 
-  def get_nist_reference(cci_number)
-    item_node = @cci_xml.xpath("//cci_list/cci_items/cci_item[@id='#{cci_number}']")[0] unless @cci_xml.nil?
-    unless item_node.nil?
-      nist_ref = item_node.xpath('./references/reference[not(@version <= preceding-sibling::reference/@version) and not(@version <=following-sibling::reference/@version)]/@index').text
-      nist_ver = item_node.xpath('./references/reference[not(@version <= preceding-sibling::reference/@version) and not(@version <=following-sibling::reference/@version)]/@version').text
-    end
-    [nist_ref, nist_ver]
-  end
-
-  def wrap(s, width = 78)
-    s.gsub!(/\\r/, "   \n")
-    WordWrap.ww(s.to_s, width)
-  end
-
+  # converts passed in data into InSpec format
   def parse_controls
-    @csv_handle.each do |row|
+    @transformed_data.each do |contr|
       print '.'
       control = Inspec::Control.new
-      control.id     = row[@mapping['control.id']]     unless @mapping['control.id'].nil? || row[@mapping['control.id']].nil?
-      control.title  = row[@mapping['control.title']]  unless @mapping['control.title'].nil? || row[@mapping['control.title']].nil?
-      control.desc   = row[@mapping['control.desc']]   unless @mapping['control.desc'].nil? || row[@mapping['control.desc']].nil?
-      nist, nist_rev = get_nist_reference(row[@mapping['control.tags']['cci']]) unless @mapping['control.tags']['cci'].nil? || row[@mapping['control.tags']['cci']].nil?
-      control.add_tag(Inspec::Tag.new('nist', [nist, 'Rev_' + nist_rev])) unless nist.nil? || nist_rev.nil?
-      @mapping['control.tags'].each do |tag|
-        control.add_tag(Inspec::Tag.new(tag.first.to_s, row[tag.last])) unless row[tag.last].nil?
-      end
-      control.impact = get_impact(row[@mapping['control.tags']['severity']]) unless @mapping['control.tags']['severity'].nil? || row[@mapping['control.tags']['severity']].nil?
+      control.id = 'M-' + contr[:title].split(' ')[0]
+      control.title = contr[:title]
+      control.desc = contr[:desc]
+      control.impact = get_impact(contr[:level])
+      control.add_tag(Inspec::Tag.new('ref', contr[:ref])) unless contr[:ref].nil?
+      control.add_tag(Inspec::Tag.new('applicability', contr[:applicability])) unless contr[:applicability].nil?
+      control.add_tag(Inspec::Tag.new('cis_id', contr[:title].split(' ')[0])) unless contr[:title].nil?
+      control.add_tag(Inspec::Tag.new('cis_control', contr[:cis])) unless contr[:cis].nil? # tag cis_control: [5, 6.1] ##6.1 is the version
+      control.add_tag(Inspec::Tag.new('cis_level', contr[:level])) unless contr[:level].nil?
+      control.add_tag(Inspec::Tag.new('nist', @nist_mapping)) unless @nist_mapping.nil?  # tag nist: [AC-3, 4]  ##4 is the version
+      control.add_tag(Inspec::Tag.new('audit', contr[:check])) unless contr[:check].nil?
+      control.add_tag(Inspec::Tag.new('fix', contr[:fix])) unless contr[:fix].nil?
+      control.add_tag(Inspec::Tag.new('Default Value', contr[:default])) unless contr[:default].nil?
       @controls << control
     end
   end
 
+
+  # Writes InSpec controls to file
   def generate_controls
-    Dir.mkdir 'controls' unless Dir.exist?('controls')
     @controls.each do |control|
       file_name = control.id.to_s
-      myfile = File.new("controls/#{file_name}.rb", 'w')
+      myfile = File.new("#{@name}/controls/#{file_name}.rb", 'w')
       width = 80
-      myfile.puts wrap(control.to_ruby, @mapping['width'])
+      myfile.puts wrap(control.to_ruby, width)
       myfile.close
     end
   end

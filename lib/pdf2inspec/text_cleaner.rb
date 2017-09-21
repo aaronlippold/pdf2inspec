@@ -4,16 +4,9 @@
 
 class TextCleaner
   # Takes in text file, cleans data and writes to new text file.
-  def clean_file
-    extracted_data = ""
-    File.open('/Users/melsharkawi/Documents/inspec-project/pdf2inspec/pdf-to-text/CIS_Docker_Community_Edition_Benchmark_v1.1.0.txt').each do |line|
-      extracted_data += line.to_s.lstrip
-    end
-
-    clean_data = clean_controls(extracted_data)
-    f = File.open('pdf-to-text/cleanfile.txt', 'w')
-    f.write(clean_data)
-    f.close
+  def clean_data(data)
+    puts ""
+    clean_data = clean_controls(data)
   end
 
   # Cleans control information from passed in file
@@ -22,7 +15,8 @@ class TextCleaner
     clean_pagenum = remove_pagenum(controls_data)
     clean_section_header = remove_section_header(clean_pagenum)
     clean_whitespace = remove_newline_in_controls(clean_section_header)
-    clean_data = separate_controls(clean_whitespace)
+    clean_special = remove_special(clean_whitespace)
+    clean_data = separate_controls(clean_special)
     return clean_data
   end
 
@@ -55,6 +49,8 @@ class TextCleaner
     add_whitespace_between_controls = extracted_data.gsub(/(.*?(?=\d\.\d{1}.*?(?<=\)$))|(.*?(?=\d\.\d{2}.*?(?<=\)$)))|(.*?(?=\d\.\d{1}.*\n.*?(?<=\)$)))|(.*?(?=\d\.\d{2}.*\n.*?(?<=\)$))))/, "\n").to_s
     return add_whitespace_between_controls
   end
-end
 
-TextCleaner.new.clean_file
+  def remove_special(extracted_data)
+    return extracted_data.gsub(/[\]/, "")
+  end
+end
