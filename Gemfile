@@ -9,4 +9,4 @@ gem 'word_wrap'
 gem 'thor'
 gem 'roo'
 gem 'toml', :path => 'temp_hack/'
-
+gem 'rspec'
