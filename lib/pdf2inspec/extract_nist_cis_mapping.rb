@@ -16,6 +16,10 @@ class ExtractNistMappings
     @xlsx = Roo::Excelx.new(@file)
   end
 
+  def full_excl
+    @full_excel
+  end
+
   def set_working_sheet
     @xlsx.default_sheet = 'VER 6.1 Controls'
   end
@@ -23,7 +27,6 @@ class ExtractNistMappings
   def get_headers
     @xlsx.row(3).each_with_index {|header,i|
       @headers[header] = i
-      puts header
     }
   end
 

@@ -21,7 +21,7 @@ class Pdf2Inspec
     @controls = []
     @csv_handle = nil
     @cci_xml = nil
-    @mapping = nil
+    @nist_mapping = nil
     @pdf_text = ''
     @clean_text = ''
     @transformed_data = ''
@@ -53,6 +53,7 @@ class Pdf2Inspec
 
   def read_excl
     excel = ExtractNistMappings.new(@excl_file)
+    @nist_mapping = excel.full_excl
   # rescue => e
   #   puts "Exception: #{e.message}"
   #   puts 'Existing...'
@@ -87,17 +88,19 @@ class Pdf2Inspec
   def parse_controls
     @transformed_data.each do |contr|
       print '.'
+      nist = find_nist(contr[:title].split(' ')[0])
       control = Inspec::Control.new
       control.id = 'M-' + contr[:title].split(' ')[0]
       control.title = contr[:title]
-      control.desc = contr[:desc]
-      control.impact = get_impact(contr[:level])
+      control.desc = contr[:descr]
+      control.impact = get_impact('medium')
       control.add_tag(Inspec::Tag.new('ref', contr[:ref])) unless contr[:ref].nil?
+      control.add_tag(Inspec::Tag.new('severity', 'medium'))
       control.add_tag(Inspec::Tag.new('applicability', contr[:applicability])) unless contr[:applicability].nil?
       control.add_tag(Inspec::Tag.new('cis_id', contr[:title].split(' ')[0])) unless contr[:title].nil?
       control.add_tag(Inspec::Tag.new('cis_control', contr[:cis])) unless contr[:cis].nil? # tag cis_control: [5, 6.1] ##6.1 is the version
       control.add_tag(Inspec::Tag.new('cis_level', contr[:level])) unless contr[:level].nil?
-      control.add_tag(Inspec::Tag.new('nist', @nist_mapping)) unless @nist_mapping.nil?  # tag nist: [AC-3, 4]  ##4 is the version
+      control.add_tag(Inspec::Tag.new('nist', [nist])) unless nist.nil?  # tag nist: [AC-3, 4]  ##4 is the version
       control.add_tag(Inspec::Tag.new('audit', contr[:check])) unless contr[:check].nil?
       control.add_tag(Inspec::Tag.new('fix', contr[:fix])) unless contr[:fix].nil?
       control.add_tag(Inspec::Tag.new('Default Value', contr[:default])) unless contr[:default].nil?
@@ -115,5 +118,17 @@ class Pdf2Inspec
       myfile.puts wrap(control.to_ruby, width)
       myfile.close
     end
+  end
+
+  private
+
+  def find_nist(cis)
+    @nist_mapping.each do |mapping|
+      if mapping[:cis] == cis
+        #puts mapping[:nist]
+        return mapping[:nist]
+      end
+    end
+    return "Not Mapped"
   end
 end

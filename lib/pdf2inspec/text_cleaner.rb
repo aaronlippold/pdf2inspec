@@ -5,7 +5,6 @@
 class TextCleaner
   # Takes in text file, cleans data and writes to new text file.
   def clean_data(data)
-    puts ""
     clean_data = clean_controls(data)
   end
 
