@@ -88,7 +88,7 @@ class Pdf2Inspec
   def parse_controls
     @transformed_data.each do |contr|
       print '.'
-      nist = find_nist(contr[:title].split(' ')[0])
+      nist = find_nist(contr[:cis].split(' ')[0])
       control = Inspec::Control.new
       control.id = 'M-' + contr[:title].split(' ')[0]
       control.title = contr[:title]
@@ -125,7 +125,6 @@ class Pdf2Inspec
   def find_nist(cis)
     @nist_mapping.each do |mapping|
       if mapping[:cis] == cis
-        #puts mapping[:nist]
         return mapping[:nist]
       end
     end

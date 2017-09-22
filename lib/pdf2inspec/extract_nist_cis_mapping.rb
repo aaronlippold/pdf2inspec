@@ -33,6 +33,7 @@ class ExtractNistMappings
   def retrieve_mappings
     nist_ver = @xlsx.row(3)[0]
     cis_ver = @xlsx.row(2)[4]
+    ctrl_count = 1
     ((@xlsx.first_row + 3)..@xlsx.last_row).each do |row_value|
       current_row = Hash.new
       if @xlsx.row(row_value)[@headers['NIST SP 800-53 Control #']].to_s != ''
@@ -41,7 +42,13 @@ class ExtractNistMappings
         current_row[:nist] = "Not Mapped"
       end
       current_row[:nist_ver] = nist_ver
-      current_row[:cis] = @xlsx.row(row_value)[@headers['Control']].to_s
+      if @xlsx.row(row_value)[@headers['Control']].to_s == ''
+        current_row[:cis] = ctrl_count.to_s
+        ctrl_count += 1
+      else
+        current_row[:cis] = @xlsx.row(row_value)[@headers['Control']].to_s
+      end
+      puts current_row[:cis]
       current_row[:cis_ver] = cis_ver
       @full_excel << current_row
     end
