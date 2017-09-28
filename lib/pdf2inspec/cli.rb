@@ -47,9 +47,9 @@ class MyCLI < Thor
     puts "\tpdf2inspec translates a PDF Secuirty Profile to Inspec controls\n\n"
     puts "\t-f --pdf : Path and file of the PDF you would like to process"
     puts "\t-n --name : The name for your new InSpec profile"
-    puts "\t-V --verbose : verbose run ( for when you need to see what's broken )"
-    puts "\nexample: ./pdf2inspec exec -f secureConfigruation.pdf -n my_inspec_profile\n\n"
-    puts "\nexample: ./pdf2inspec exec -f secureConfigruation.pdf -n my_inspec_profile --verbose\n\n"
+    puts "\t-x --excl : The CIS to NIST mapping Excel file"
+    puts "\nexample: ./pdf2inspec exec --pdf secureConfigruation.pdf --excl myControlMap.xls --name my_inspec_profile\n\n"
+    puts "\nexample: ./pdf2inspec exec -f secureConfigruation.pdf -x myControlMap.xls -n my_inspec_profile\n\n"
   end
 
   map %w{--version -v} => :print_version
