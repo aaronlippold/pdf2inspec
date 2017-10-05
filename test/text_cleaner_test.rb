@@ -1,4 +1,4 @@
-require_relative "../../../lib/pdf2inspec/text_cleaner"
+require_relative "../lib/pdf2inspec/text_cleaner"
 require 'rspec'
 
 RSpec.describe TextCleaner do

@@ -1,4 +1,4 @@
-require_relative '../../../lib/pdf2inspec/extract_nist_cis_mapping'
+require_relative '../lib/pdf2inspec/extract_nist_cis_mapping'
 require 'rspec'
 
 RSpec.describe ExtractNistMappings do

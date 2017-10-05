@@ -1,4 +1,4 @@
-require_relative '../../../lib/pdf2inspec/parser'
+require_relative '../lib/pdf2inspec/parser'
 require 'rspec'
 
 testStr = '2.13 Ensure operations on legacy registry (v1) are Disabled (Scored)

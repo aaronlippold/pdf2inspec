@@ -1,4 +1,4 @@
-require_relative '../../../lib/pdf2inspec/write_to_inspec'
+require_relative '../lib/pdf2inspec/write_to_inspec'
 require 'rspec'
 
 RSpec.describe WriteToInSpec do
