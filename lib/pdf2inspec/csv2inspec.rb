@@ -13,10 +13,11 @@ require_relative 'parser'
 #require 'yaml'
 
 class Pdf2Inspec
-  def initialize(pdf_file, excl_file, profile_name)
+  def initialize(pdf_file, excl_file, profile_name, debug = false)
     @pdf_file = pdf_file
     @excl_file = excl_file
     @name = profile_name
+    @debug = debug
 
     @controls = []
     @csv_handle = nil
@@ -31,6 +32,7 @@ class Pdf2Inspec
     get_transformed_data
     read_excl
     create_skeleton
+    clean_tags
     parse_controls
     generate_controls
     create_json
@@ -45,10 +47,15 @@ class Pdf2Inspec
 
   def clean_pdf_text
     @clean_text = TextCleaner.new.clean_data(@pdf_text)
+    write_clean_text if @debug
   end
 
   def get_transformed_data
     @transformed_data = PrepareData.new(@clean_text).transformed_data
+  end
+
+  def write_clean_text
+    File.write('data/debug_text', @clean_text)
   end
 
   def read_excl
@@ -129,5 +136,22 @@ class Pdf2Inspec
       end
     end
     return "Not Mapped"
+  end
+
+  def clean_tags
+    @transformed_data.map do |contr|
+      contr[:title] = contr[:title].tr("\n", ' ')
+      contr[:title] = contr[:title].tr('\"', "'")
+      contr[:ref] = contr[:ref].tr("\n", ' ') unless contr[:ref].nil?
+      contr[:check] = contr[:check].tr("\n", "\r") unless contr[:check].nil?
+      contr[:check] = contr[:check].tr('\"', "'") unless contr[:check].nil?
+      contr[:check] = contr[:check].gsub(/\r\d\./, '') unless contr[:check].nil?
+      contr[:check] = contr[:check].gsub(/\ro/, '') unless contr[:check].nil?
+      contr[:fix] = contr[:fix].tr("\n", "\r") unless contr[:fix].nil?
+      contr[:fix] = contr[:fix].tr('\"', "'") unless contr[:fix].nil?
+      contr[:fix] = contr[:fix].gsub(/\r\d\./, '') unless contr[:fix].nil?
+      contr[:descr] = contr[:descr].tr("\n", ' ') unless contr[:descr].nil?
+      contr[:descr] = contr[:descr].tr('\"', "'") unless contr[:descr].nil?
+    end
   end
 end

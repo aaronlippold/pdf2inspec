@@ -1,14 +1,14 @@
 require 'parslet'
 require 'parslet/convenience'
 
-
 class ControlParser < Parslet::Parser
 
   root :controls
 
   rule :controls do
     newline.maybe >>
-    control.repeat(1)
+    control.repeat(1) >>
+    newline.maybe
   end
 
   rule :control do
@@ -18,22 +18,49 @@ class ControlParser < Parslet::Parser
     rationale >>
     audit >>
     remediation >>
-    impact >>
-    default_value >>
-    references >>
+    impact.maybe >>
+    default_value.maybe >>
+    references.maybe >>
+    cis_controls.maybe >>
+    newline.maybe >>
+    newline.maybe
+  end
+
+  rule :attribute do
+    header.absent? >>
+    (
+    description |
+    rationale |
+    audit |
+    remediation |
+    impact |
+    default_value |
+    references |
     cis_controls
+    )
+  end
+
+  rule :attribute_absent do
+    str('Description:').absent? >>
+    str('Rationale:').absent? >>
+    str('Audit:').absent? >>
+    str('Remediation:').absent? >>
+    str('Impact:').absent? >>
+    str('Default Value:').absent? >>
+    str('References:').absent? >>
+    str('CIS Controls:').absent? >>
+    str("\n\n").absent?
   end
 
   rule(:header) do
     (real.as(:section_num) >>
     title.as(:title) >>
-    newline.maybe >>
     score.as(:score)).as(:header) >>
     newline
   end
 
   rule(:title) do
-    (str('(Scored)').absent? >> str('(Not Scored)').absent? >> str('(Not').absent?  >> (words | lparn | rparn)).repeat(1)
+    (str('(Scored)').absent? >> str('(Not Scored)').absent? >> str('(Not').absent?  >> (words | lparn | rparn | newline) | space).repeat(1)
   end
 
   rule :applicability do
@@ -47,9 +74,9 @@ class ControlParser < Parslet::Parser
     (word >>
      space >>
      integer.repeat(1) >>
-     space >>
+     (space >>
      str('-') >>
-     words).as(:applicability) >>
+     words).maybe).as(:applicability) >>
     newline
   end
 
@@ -140,7 +167,7 @@ class ControlParser < Parslet::Parser
   end
 
   rule :word do
-    match('[a-zA-Z0-9/,\.:\'\"]').repeat(1)
+    match('[a-zA-Z0-9/,\.:\'\"*]').repeat(1)
   end
 
   rule :words do
@@ -148,11 +175,11 @@ class ControlParser < Parslet::Parser
   end
 
   def line_body(ending)
-    (str(ending).absent? >> any).repeat(1)
+    (attribute_absent >> any).repeat(1)
   end
 
   def line(ending)
-    line_body(ending) >> eol?
+    line_body(ending)
   end
 
   def lines(ending)
@@ -187,99 +214,6 @@ class ControlParser < Parslet::Parser
   end
 end
 
-testStr = '2.13 Ensure operations on legacy registry (v1) are Disabled (Scored)
-Profile Applicability:
-Level 1 - Linux Host OS
-Description:
-All Docker containers and their data and metadata is stored under /var/lib/docker
-directory. By default, /var/lib/docker would be mounted under / or /var partitions based
-on availability.
-Rationale:
-Docker depends on /var/lib/docker as the default directory where all Docker related files,
-including the images, are stored. This directory might fill up fast and soon Docker and the
-host could become unusable. So, it is advisable to create a separate partition (logical
-volume) for storing Docker files.
-Audit:
-At the Docker host execute the below command:
-grep /var/lib/docker /etc/fstab
-This should return the partition details for /var/lib/docker mount point.
-Remediation:
-For new installations, create a separate partition for /var/lib/docker mount point. For
-systems that were previously installed, use the Logical Volume Manager (LVM) to create
-partitions.
-Impact:
-None.
-Default Value:
-By default, /var/lib/docker would be mounted under / or /var partitions based on
-availability.
-References:
-1. https://www.projectatomic.io/docs/docker-storage-recommendation/
-CIS Controls:
-14 Controlled Access Based on the Need to Know
-Controlled Access Based on the Need to Know
-
-1.2 Ensure the container host has been Hardened (Not Scored)
-Profile Applicability:
-Level 1 - Linux Host OS
-Description:
-Containers run on a Linux host. A container host can run one or more containers. It is of
-utmost importance to harden the host to mitigate host security misconfiguration.
-Rationale:
-You should follow infrastructure security best practices and harden your host OS. Keeping
-the host system hardened would ensure that the host vulnerabilities are mitigated. Not
-hardening the host system could lead to security exposures and breaches.
-Audit:
-Ensure that the host specific security guidelines are followed. Ask the system
-administrators which security benchmark does current host system comply with. Ensure
-that the host systems actually comply with that host specific security benchmark.
-Remediation:
-You may consider various CIS Security Benchmarks for your container host. If you have
-other security guidelines or regulatory requirements to adhere to, please follow them as
-suitable in your environment.
-Additionally, you can run a kernel with grsecurity and PaX. This would add many safety
-checks, both at compile-time and run-time. It is also designed to defeat many exploits and
-has powerful security features. These features do not require Docker-specific
-configuration, since those security features apply system-wide, independent of containers.
-Impact:
-None.
-Default Value:
-By default, host has factory settings. It is not hardened.
-References:
-1. https://docs.docker.com/engine/security/security/
-2.
-3.
-4.
-5.
-6.
-7.
-https://learn.cisecurity.org/benchmarks
-https://docs.docker.com/engine/security/security/#other-kernel-security-features
-https://grsecurity.net/
-https://en.wikibooks.org/wiki/Grsecurity
-https://pax.grsecurity.net/
-http://en.wikipedia.org/wiki/PaX
-CIS Controls:
-3 Secure Configurations for Hardware and Software on Mobile Devices, Laptops,
-Workstations, and Servers
-Secure Configurations for Hardware and Software on Mobile Devices, Laptops,
-Workstations, and Servers
-
-'
-
-# extracted_data = File.read('../../data/CIS_DCE_v1.1.0.clean.txt')
-#
-# parser = ControlParser.new
-
-# begin
-#   puts "############"
-#   puts "Parse Data"
-#   puts "############"
-#   parse = p parser.parse(extracted_data)
-#   # parse = p parser.parse(extracted_data)
-# rescue Parslet::ParseFailed => error
-#   puts error.parse_failure_cause.ascii_tree
-# end
-
 class Trans < Parslet::Transform
   rule(:line => simple(:text)) { text }
   rule(:section_num => simple(:section), :title => simple(:title), :score => simple(:score)) { section + title + score }
@@ -288,21 +222,43 @@ class Trans < Parslet::Transform
        :references => sequence(:references), :cis_controls => sequence(:cis_controls)) { {:title => header.to_s , :level => applicability.to_s,
         :descr => description[0].to_s + rationale[0].to_s, :check => audit[0].to_s, :fix => remediation[0].to_s, :impact => impact[0].to_s, :default => default_value[0].to_s,
         :ref => references[0].to_s, :cis => cis_controls[0].to_s} }
+  rule(:header => simple(:header), :applicability => simple(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
+       :audit => sequence(:audit), :remediation => sequence(:remediation),
+       :references => sequence(:references)) { {:title => header.to_s , :level => applicability.to_s,
+        :descr => description[0].to_s + rationale[0].to_s, :check => audit[0].to_s, :fix => remediation[0].to_s,
+        :ref => references[0].to_s } }
+  rule(:header => simple(:header), :applicability => simple(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
+      :audit => sequence(:audit), :remediation => sequence(:remediation), :impact => sequence(:impact),
+      :references => sequence(:references)) { {:title => header.to_s , :level => applicability.to_s,
+       :descr => description[0].to_s + rationale[0].to_s, :check => audit[0].to_s, :fix => remediation[0].to_s, :impact => impact[0].to_s,
+       :ref => references[0].to_s} }
+  rule(:header => simple(:header), :applicability => simple(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
+       :audit => sequence(:audit), :remediation => sequence(:remediation), :impact => sequence(:impact)) { {:title => header.to_s , :level => applicability.to_s,
+        :descr => description[0].to_s + rationale[0].to_s, :check => audit[0].to_s, :fix => remediation[0].to_s, :impact => impact[0].to_s} }
+  rule(:header => simple(:header), :applicability => simple(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
+       :audit => sequence(:audit), :remediation => sequence(:remediation), :default_value => sequence(:default_value),
+       :references => sequence(:references)) { {:title => header.to_s , :level => applicability.to_s,
+        :descr => description[0].to_s + rationale[0].to_s, :check => audit[0].to_s, :fix => remediation[0].to_s, :default => default_value[0].to_s,
+        :ref => references[0].to_s} }
+  rule(:header => simple(:header), :applicability => simple(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
+       :audit => sequence(:audit), :remediation => sequence(:remediation), :impact => sequence(:impact), :default_value => sequence(:default_value),
+       :references => sequence(:references)) { {:title => header.to_s , :level => applicability.to_s,
+        :descr => description[0].to_s + rationale[0].to_s, :check => audit[0].to_s, :fix => remediation[0].to_s, :impact => impact[0].to_s, :default => default_value[0].to_s,
+        :ref => references[0].to_s} }
+  rule(:header => simple(:header), :applicability => simple(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
+       :audit => sequence(:audit), :remediation => sequence(:remediation)) { {:title => header.to_s , :level => applicability.to_s,
+        :descr => description[0].to_s + rationale[0].to_s, :check => audit[0].to_s, :fix => remediation[0].to_s} }
 end
-#
-# transformed_data = Trans.new.apply(parse)
-# puts "############"
-# puts "Transformed Data"
-# puts "############"
-# p transformed_data
 
 class PrepareData
   def initialize(clean_text)
     @parser = ControlParser.new
+    @attributes = []
 
     data = parse(clean_text)
 
     @transformed_data = Trans.new.apply(data)
+    add_cis
   end
 
   def transformed_data
@@ -324,9 +280,22 @@ class PrepareData
   def convert_str(value)
     value.to_s
   end
-end
 
-# puts "############"
-# puts "Prepared Data"
-# puts "############"
-# puts PrepareData.new(transformed_data)
+  def add_cis
+    @transformed_data.map do |ctrl|
+      if !ctrl[:cis] and ctrl[:ref]
+        references = ctrl[:ref].split("\n")
+        references.each do |ref|
+          match = ref.scan(/(?<=#)\d{1,}\.\d{1,}/).map(&:inspect).join(',').gsub(/\"/, '').gsub(/,/, ' ')
+          if match.length > 0
+            ctrl[:cis] = match
+          else
+            ctrl[:cis] = 'No CIS Control'
+          end
+        end
+      elsif !ctrl[:cis] and !ctrl[:ref]
+        ctrl[:cis] = 'No CIS Control'
+      end
+    end
+  end
+end

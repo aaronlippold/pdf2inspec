@@ -136,6 +136,7 @@ DEPENDENCIES
   inspec
   parslet (~> 1.5)
   roo
+  rspec
   thor
   toml!
   word_wrap

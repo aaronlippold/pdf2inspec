@@ -48,7 +48,6 @@ class ExtractNistMappings
       else
         current_row[:cis] = @xlsx.row(row_value)[@headers['Control']].to_s
       end
-      puts current_row[:cis]
       current_row[:cis_ver] = cis_ver
       @full_excel << current_row
     end

@@ -11,10 +11,11 @@ class MyCLI < Thor
   desc 'exec', 'pdf2inspec translates a PDF Security Control Speficication to Inspec Security Profile'
   option :pdf, required: true, aliases: '-p'
   option :excl, required: true, aliases: '-x'
-  option :name, required: true, aliases: '-n' 
+  option :name, required: true, aliases: '-n'
+  option :debug, required: false, aliases: '-d', :type => :boolean
 
   def exec
-    pdf2inspec = Pdf2Inspec.new(options[:pdf], options[:excl], options[:name])
+    pdf2inspec = Pdf2Inspec.new(options[:pdf], options[:excl], options[:name], options[:debug])
   end
 
   desc 'generate_map', 'Generates mapping template from CSV to Inspec Controls'
