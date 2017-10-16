@@ -49,8 +49,9 @@ class MyCLI < Thor
     puts "\t-f --pdf : Path and file of the PDF you would like to process"
     puts "\t-n --name : The name for your new InSpec profile"
     puts "\t-x --excl : The CIS to NIST mapping Excel file"
+    puts "\t-d --debug : (boolean) Turns on / off debug data for parsing"
     puts "\nexample: ./pdf2inspec exec --pdf secureConfigruation.pdf --excl myControlMap.xls --name my_inspec_profile\n\n"
-    puts "\nexample: ./pdf2inspec exec -f secureConfigruation.pdf -x myControlMap.xls -n my_inspec_profile\n\n"
+    puts "\nexample: ./pdf2inspec exec -f secureConfigruation.pdf -x myControlMap.xls -n my_inspec_profile\n\n --debug"
   end
 
   map %w{--version -v} => :print_version
