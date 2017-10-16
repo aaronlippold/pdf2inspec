@@ -152,6 +152,7 @@ class Pdf2Inspec
       contr[:fix] = contr[:fix].gsub(/\r\d\./, '') unless contr[:fix].nil?
       contr[:descr] = contr[:descr].tr("\n", ' ') unless contr[:descr].nil?
       contr[:descr] = contr[:descr].tr('\"', "'") unless contr[:descr].nil?
+      contr[:level] = contr[:level].split(' ')[1].to_i unless contr[:level].nil?
     end
   end
 end
