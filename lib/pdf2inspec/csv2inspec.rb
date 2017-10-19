@@ -108,8 +108,8 @@ class Pdf2Inspec
       control.add_tag(Inspec::Tag.new('cis_control', contr[:cis])) unless contr[:cis].nil? # tag cis_control: [5, 6.1] ##6.1 is the version
       control.add_tag(Inspec::Tag.new('cis_level', contr[:level])) unless contr[:level].nil?
       control.add_tag(Inspec::Tag.new('nist', [nist])) unless nist.nil?  # tag nist: [AC-3, 4]  ##4 is the version
-      control.add_tag(Inspec::Tag.new('audit', contr[:check])) unless contr[:check].nil?
-      control.add_tag(Inspec::Tag.new('fix', contr[:fix])) unless contr[:fix].nil?
+      control.add_tag(Inspec::Tag.new('audit text', contr[:check])) unless contr[:check].nil?
+      control.add_tag(Inspec::Tag.new('remediation', contr[:fix])) unless contr[:fix].nil?
       control.add_tag(Inspec::Tag.new('Default Value', contr[:default])) unless contr[:default].nil?
       @controls << control
     end
