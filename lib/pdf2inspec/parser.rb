@@ -288,7 +288,7 @@ class PrepareData
         references.each do |ref|
           match = ref.scan(/(?<=#)\d{1,}\.\d{1,}/).map(&:inspect).join(',').gsub(/\"/, '').gsub(/,/, ' ')
           if match.length > 0
-            ctrl[:cis] = match
+            ctrl[:cis] = match.split(' ')
           else
             ctrl[:cis] = 'No CIS Control'
           end

@@ -95,7 +95,7 @@ class Pdf2Inspec
   def parse_controls
     @transformed_data.each do |contr|
       print '.'
-      nist = find_nist(contr[:cis].split(' ')[0])
+      nist = find_nist(contr[:cis]) unless contr[:cis] == "No CIS Control"
       control = Inspec::Control.new
       control.id = 'M-' + contr[:title].split(' ')[0]
       control.title = contr[:title]
@@ -107,9 +107,9 @@ class Pdf2Inspec
       control.add_tag(Inspec::Tag.new('cis_id', contr[:title].split(' ')[0])) unless contr[:title].nil?
       control.add_tag(Inspec::Tag.new('cis_control', contr[:cis])) unless contr[:cis].nil? # tag cis_control: [5, 6.1] ##6.1 is the version
       control.add_tag(Inspec::Tag.new('cis_level', contr[:level])) unless contr[:level].nil?
-      control.add_tag(Inspec::Tag.new('nist', [nist])) unless nist.nil?  # tag nist: [AC-3, 4]  ##4 is the version
+      control.add_tag(Inspec::Tag.new('nist', nist)) unless nist.nil?  # tag nist: [AC-3, 4]  ##4 is the version
       control.add_tag(Inspec::Tag.new('audit text', contr[:check])) unless contr[:check].nil?
-      control.add_tag(Inspec::Tag.new('remediation', contr[:fix])) unless contr[:fix].nil?
+      control.add_tag(Inspec::Tag.new('fix', contr[:fix])) unless contr[:fix].nil?
       control.add_tag(Inspec::Tag.new('Default Value', contr[:default])) unless contr[:default].nil?
       @controls << control
     end
@@ -129,13 +129,19 @@ class Pdf2Inspec
 
   private
 
-  def find_nist(cis)
-    @nist_mapping.each do |mapping|
-      if mapping[:cis] == cis
-        return mapping[:nist]
+  def find_nist(cis_array)
+    mapping_array = []
+    cis_array.each do |cis|
+      @nist_mapping.each do |nist|
+        if nist[:cis] == cis
+          mapping_array.push(nist[:nist])
+        end
       end
     end
-    return "Not Mapped"
+    if mapping_array == []
+      return "Not Mapped"
+    end
+    return mapping_array
   end
 
   def clean_tags
