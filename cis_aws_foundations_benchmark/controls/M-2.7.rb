@@ -21,11 +21,11 @@ https://docs.aws.amazon.com/awscloudtrail/latest/userguide/encryptingcloudtrail-
 CSC v6.0 #6: Maintenance, Monitoring, and Analysis of Audit Logs 5. CCE-78919-8"
   tag "severity": "medium"
   tag "cis_id": "2.7"
-  tag "cis_control": "No CIS Control"
-  tag "cis_level": "Level 2"
-  tag "nist": ["Not Mapped"]
-  tag "audit": "Perform the following to determine if CloudTrail is configured
-to use SSE-KMS:
+  tag "cis_control": [["13.1"], "6.1"]
+  tag "cis_level": 2
+  tag "nist": [["AR-2", 4]]
+  tag "audit text": "Perform the following to determine if CloudTrail is
+configured to use SSE-KMS:
 Via the Management Console Sign in to the AWS Management Console and open the
 CloudTrail console
 at https://console.aws.amazon.com/cloudtrail In the left navigation pane,

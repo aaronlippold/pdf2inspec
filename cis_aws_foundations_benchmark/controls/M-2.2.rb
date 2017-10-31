@@ -12,11 +12,11 @@ http://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-log-fileval
 2. CCE-78914-9 3. CIS CSC v6.0 #6.3"
   tag "severity": "medium"
   tag "cis_id": "2.2"
-  tag "cis_control": "6.3"
-  tag "cis_level": "Level 2"
-  tag "nist": ["AU-4"]
-  tag "audit": "Perform the following on each trail to determine if log file
-validation is enabled:
+  tag "cis_control": [["6.3"], "6.1"]
+  tag "cis_level": 2
+  tag "nist": [["AU-4", 4]]
+  tag "audit text": "Perform the following on each trail to determine if log
+file validation is enabled:
 Via the management Console Sign in to the AWS Management Console and open the
 IAM console
 at https://console.aws.amazon.com/cloudtrail Click on Trails on the left

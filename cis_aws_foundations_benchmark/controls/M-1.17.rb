@@ -22,11 +22,10 @@ https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/billing-whatis.html
 https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/billingpermissions-ref.html#billing-example-policies"
   tag "severity": "medium"
   tag "cis_id": "1.17"
-  tag "cis_control": "No CIS Control"
-  tag "cis_level": "Level 1"
-  tag "nist": ["Not Mapped"]
-  tag "audit": "There is currently no AWS CLI support for this operation, so it
-is necessary to use the
+  tag "cis_control": ["No CIS Control", "6.1"]
+  tag "cis_level": 1
+  tag "audit text": "There is currently no AWS CLI support for this operation,
+so it is necessary to use the
 Management Console.
 As a user with IAM permission to read billing information
 (aws-portal:ViewBilling): Sign in to the AWS Management Console and open the

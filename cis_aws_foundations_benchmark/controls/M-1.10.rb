@@ -8,10 +8,9 @@ force login attempts. "
   tag "ref": "1. CCE-78908-1"
   tag "severity": "medium"
   tag "cis_id": "1.10"
-  tag "cis_control": "No CIS Control"
-  tag "cis_level": "Level 1"
-  tag "nist": ["Not Mapped"]
-  tag "audit": "Perform the following to ensure the password policy is
+  tag "cis_control": ["No CIS Control", "6.1"]
+  tag "cis_level": 1
+  tag "audit text": "Perform the following to ensure the password policy is
 configured as prescribed:
 Via AWS Console Login to AWS Console (with appropriate permissions to View
 Identity Access

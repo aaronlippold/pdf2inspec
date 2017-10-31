@@ -12,10 +12,12 @@ security analysis, resource change tracking, and compliance auditing. "
 #11.3, #14.6"
   tag "severity": "medium"
   tag "cis_id": "2.5"
-  tag "cis_control": "1.1 1.3 1.4 5.2 11.1 11.3 14.6"
-  tag "cis_level": "Level 1"
-  tag "nist": ["CM-8 (3)"]
-  tag "audit": "Process to evaluate AWS Config configuration per region
+  tag "cis_control": [["1.1", "1.3", "1.4", "5.2", "11.1", "11.3", "14.6"],
+"6.1"]
+  tag "cis_level": 1
+  tag "nist": [["CM-8 (3)", 4], ["CM-8 (2)", 4], ["CM-8", 4], ["AC-6 (7)", 4],
+["CM-6 (1)", 4], ["CM-6 (2)", 4], ["AU-2", 4]]
+  tag "audit text": "Process to evaluate AWS Config configuration per region
 Via AWS Management Console Sign in to the AWS Management Console and open the
 AWS Config console at
 https://console.aws.amazon.com/config/. On the top right of the console select

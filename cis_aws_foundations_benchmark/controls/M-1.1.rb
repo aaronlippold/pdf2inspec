@@ -12,11 +12,11 @@ http://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html 2. CIS CSC
 v6.0 #5.1"
   tag "severity": "medium"
   tag "cis_id": "1.1"
-  tag "cis_control": "5.1"
-  tag "cis_level": "Level 1"
-  tag "nist": ["AC-6 (9)"]
-  tag "audit": "Implement the Ensure a log metric filter and alarm exist for
-usage of 'root'
+  tag "cis_control": [["5.1"], "6.1"]
+  tag "cis_level": 1
+  tag "nist": [["AC-6 (9)", 4]]
+  tag "audit text": "Implement the Ensure a log metric filter and alarm exist
+for usage of 'root'
 account recommendation in the Monitoring section of this benchmark to receive
 notifications of root account usage. Additionally, executing the following
 commands will

@@ -31,8 +31,8 @@ class ExtractNistMappings
   end
 
   def retrieve_mappings
-    nist_ver = @xlsx.row(3)[0]
-    cis_ver = @xlsx.row(2)[4]
+    nist_ver = 4
+    cis_ver = @xlsx.row(2)[4].split(' ')[-1]
     ctrl_count = 1
     ((@xlsx.first_row + 3)..@xlsx.last_row).each do |row_value|
       current_row = Hash.new

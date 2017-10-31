@@ -16,10 +16,9 @@ http://docs.aws.amazon.com/cli/latest/reference/iam/attach-role-policy.html 5.
 http://docs.aws.amazon.com/cli/latest/reference/iam/list-entities-for-policy.html"
   tag "severity": "medium"
   tag "cis_id": "1.22"
-  tag "cis_control": "No CIS Control"
-  tag "cis_level": "Level 1"
-  tag "nist": ["Not Mapped"]
-  tag "audit": "Using the Amazon unified command line interface:List IAM
+  tag "cis_control": ["No CIS Control", "6.1"]
+  tag "cis_level": 1
+  tag "audit text": "Using the Amazon unified command line interface:List IAM
 policies, filter for the 'AWSSupportAccess' managed policy, and note the
 'Arn' element value:aws iam list-policies --query 'Policies[?PolicyName ==
 'AWSSupportAccess']'Check if the 'AWSSupportAccess' is attached to any IAM

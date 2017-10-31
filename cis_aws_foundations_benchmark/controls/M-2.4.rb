@@ -24,11 +24,11 @@ account activity. "
 v6.0 #6.6, #14.6"
   tag "severity": "medium"
   tag "cis_id": "2.4"
-  tag "cis_control": "6.6 14.6"
-  tag "cis_level": "Level 1"
-  tag "nist": ["SI-4 (2)"]
-  tag "audit": "Perform the following to ensure CloudTrail is configured as
-prescribed:
+  tag "cis_control": [["6.6", "14.6"], "6.1"]
+  tag "cis_level": 1
+  tag "nist": [["SI-4 (2)", 4], ["AU-2", 4]]
+  tag "audit text": "Perform the following to ensure CloudTrail is configured
+as prescribed:
 Via the AWS management Console Sign in to the AWS Management Console and open
 the CloudTrail console
 at https://console.aws.amazon.com/cloudtrail/ Under All Buckets, click on the

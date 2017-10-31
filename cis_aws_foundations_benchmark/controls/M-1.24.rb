@@ -21,11 +21,10 @@ http://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vsinline
 http://docs.aws.amazon.com/cli/latest/reference/iam/index.html#cli-aws-iam"
   tag "severity": "medium"
   tag "cis_id": "1.24"
-  tag "cis_control": "No CIS Control"
-  tag "cis_level": "Level 1"
-  tag "nist": ["Not Mapped"]
-  tag "audit": "Perform the following to determine what policies are created:
-Run the following to get a list of IAM policies:
+  tag "cis_control": ["No CIS Control", "6.1"]
+  tag "cis_level": 1
+  tag "audit text": "Perform the following to determine what policies are
+created: Run the following to get a list of IAM policies:
 aws iam list-policies --output text For each policy returned, run the following
 command to determine if any policies is
 allowing full administrative privileges on the account:

@@ -29,11 +29,11 @@ http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-networksecurity.html
 3. CIS CSC v6.0 #9.2"
   tag "severity": "medium"
   tag "cis_id": "4.4"
-  tag "cis_control": "9.2"
-  tag "cis_level": "Level 2"
-  tag "nist": ["SC-7(5)"]
-  tag "audit": "Perform the following to determine if the account is configured
-as prescribed:
+  tag "cis_control": [["9.2"], "6.1"]
+  tag "cis_level": 2
+  tag "nist": [["SC-7(5)", 4]]
+  tag "audit text": "Perform the following to determine if the account is
+configured as prescribed:
 Security Group State Login to the AWS Management Console
 at https://console.aws.amazon.com/vpc/home Repeat the next steps for all VPCs -
 including the default VPC in each AWS region: In the left pane, click Security

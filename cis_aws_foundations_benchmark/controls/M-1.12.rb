@@ -15,10 +15,10 @@ http://docs.aws.amazon.com/general/latest/gr/aws-access-keys-bestpractices.html
 html 4. CCE-78910-7 5. CIS CSC v6.0 #5.1"
   tag "severity": "medium"
   tag "cis_id": "1.12"
-  tag "cis_control": "5.1"
-  tag "cis_level": "Level 1"
-  tag "nist": ["AC-6 (9)"]
-  tag "audit": "Perform the following to determine if the root account has
+  tag "cis_control": [["5.1"], "6.1"]
+  tag "cis_level": 1
+  tag "nist": [["AC-6 (9)", 4]]
+  tag "audit text": "Perform the following to determine if the root account has
 access keys:
 Via the AWS Console
 Login to the AWS Management Console

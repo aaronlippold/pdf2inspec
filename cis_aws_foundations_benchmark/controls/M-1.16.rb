@@ -14,11 +14,10 @@ http://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vsinline
 3. CCE-78912-3"
   tag "severity": "medium"
   tag "cis_id": "1.16"
-  tag "cis_control": "No CIS Control"
-  tag "cis_level": "Level 1"
-  tag "nist": ["Not Mapped"]
-  tag "audit": "Perform the following to determine if policies are attached
-directly to users: Run the following to get a list of IAM users:
+  tag "cis_control": ["No CIS Control", "6.1"]
+  tag "cis_level": 1
+  tag "audit text": "Perform the following to determine if policies are
+attached directly to users: Run the following to get a list of IAM users:
 aws iam list-users --query 'Users[*].UserName' --output text For each user
 returned, run the following command to determine if any policies are
 attached to them:

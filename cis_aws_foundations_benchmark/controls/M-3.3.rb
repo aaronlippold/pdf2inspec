@@ -11,12 +11,12 @@ opportunity to reduce the use of it. "
   tag "ref": "1. CCE-79188-9 2. CIS CSC v6.0 #4.6, #5.1, #5.5"
   tag "severity": "medium"
   tag "cis_id": "3.3"
-  tag "cis_control": "4.6 5.1 5.5"
-  tag "cis_level": "Level 1"
-  tag "nist": ["AU-6 (5)"]
-  tag "audit": "Perform the following to determine if the account is configured
-as prescribed: Identify the log group name configured for use with CloudTrail:
-
+  tag "cis_control": [["4.6", "5.1", "5.5"], "6.1"]
+  tag "cis_level": 1
+  tag "nist": [["AU-6 (5)", 4], ["AC-6 (9)", 4], ["AU-2", 4]]
+  tag "audit text": "Perform the following to determine if the account is
+configured as prescribed: Identify the log group name configured for use with
+CloudTrail:
 aws cloudtrail describe-trails Note the <cloudtrail_log_group_name> value
 associated with
 CloudWatchLogsLogGroupArn:

@@ -10,10 +10,10 @@ resiliency against brute force login attempts. "
   tag "ref": "1. CCE-78907-3 2. CIS CSC v6.0 #5.7, #16.12"
   tag "severity": "medium"
   tag "cis_id": "1.9"
-  tag "cis_control": "5.7 16.12"
-  tag "cis_level": "Level 1"
-  tag "nist": ["IA-5 (1)"]
-  tag "audit": "Perform the following to ensure the password policy is
+  tag "cis_control": [["5.7", "16.12"], "6.1"]
+  tag "cis_level": 1
+  tag "nist": [["IA-5 (1)", 4], ["IA-2", 4]]
+  tag "audit text": "Perform the following to ensure the password policy is
 configured as prescribed:
 Via AWS Console Login to AWS Console (with appropriate permissions to View
 Identity Access

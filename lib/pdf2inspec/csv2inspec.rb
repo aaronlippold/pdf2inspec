@@ -105,7 +105,7 @@ class Pdf2Inspec
       control.add_tag(Inspec::Tag.new('severity', 'medium'))
       control.add_tag(Inspec::Tag.new('applicability', contr[:applicability])) unless contr[:applicability].nil?
       control.add_tag(Inspec::Tag.new('cis_id', contr[:title].split(' ')[0])) unless contr[:title].nil?
-      control.add_tag(Inspec::Tag.new('cis_control', contr[:cis])) unless contr[:cis].nil? # tag cis_control: [5, 6.1] ##6.1 is the version
+      control.add_tag(Inspec::Tag.new('cis_control', [contr[:cis], @nist_mapping[0][:cis_ver]])) unless contr[:cis].nil? # tag cis_control: [5, 6.1] ##6.1 is the version
       control.add_tag(Inspec::Tag.new('cis_level', contr[:level])) unless contr[:level].nil?
       control.add_tag(Inspec::Tag.new('nist', nist)) unless nist.nil?  # tag nist: [AC-3, 4]  ##4 is the version
       control.add_tag(Inspec::Tag.new('audit text', contr[:check])) unless contr[:check].nil?
@@ -134,7 +134,7 @@ class Pdf2Inspec
     cis_array.each do |cis|
       @nist_mapping.each do |nist|
         if nist[:cis] == cis
-          mapping_array.push(nist[:nist])
+          mapping_array.push([nist[:nist], nist[:nist_ver]])
         end
       end
     end

@@ -35,11 +35,10 @@ https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa_configure
 -api-require.html"
   tag "severity": "medium"
   tag "cis_id": "1.18"
-  tag "cis_control": "No CIS Control"
-  tag "cis_level": "Level 1"
-  tag "nist": ["Not Mapped"]
-  tag "audit": "Using the Amazon unified CLI, from a user or role which has the
-iam:ListRoles and
+  tag "cis_control": ["No CIS Control", "6.1"]
+  tag "cis_level": 1
+  tag "audit text": "Using the Amazon unified CLI, from a user or role which
+has the iam:ListRoles and
 iam:GetRolePolicy permissions:
 List the configured roles:
 aws iam list-roles --query 'Roles[*].{RoleName:RoleName, Arn:Arn}'

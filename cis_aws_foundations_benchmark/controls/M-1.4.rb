@@ -14,11 +14,10 @@ stolen. "
   tag "ref": "1. CCE-78902-4"
   tag "severity": "medium"
   tag "cis_id": "1.4"
-  tag "cis_control": "No CIS Control"
-  tag "cis_level": "Level 1"
-  tag "nist": ["Not Mapped"]
-  tag "audit": "Perform the following to determine if access keys are rotated
-as prescribed:
+  tag "cis_control": ["No CIS Control", "6.1"]
+  tag "cis_level": 1
+  tag "audit text": "Perform the following to determine if access keys are
+rotated as prescribed:
 Login to the AWS Management Console
 Click Services
 Click IAM

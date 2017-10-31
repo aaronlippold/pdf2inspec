@@ -8,11 +8,10 @@ remote console services, such as SSH, reduces a server's exposure to risk. "
   impact 0.5
   tag "severity": "medium"
   tag "cis_id": "4.1"
-  tag "cis_control": "No CIS Control"
-  tag "cis_level": "Level 1"
-  tag "nist": ["Not Mapped"]
-  tag "audit": "Perform the following to determine if the account is configured
-as prescribed: Login to the AWS Management Console
+  tag "cis_control": ["No CIS Control", "6.1"]
+  tag "cis_level": 1
+  tag "audit text": "Perform the following to determine if the account is
+configured as prescribed: Login to the AWS Management Console
 at https://console.aws.amazon.com/vpc/home In the left pane, click Security
 Groups For each security group, perform the following: Select the security
 group Click the Inbound Rules tab Ensure no rule exists that has a port range

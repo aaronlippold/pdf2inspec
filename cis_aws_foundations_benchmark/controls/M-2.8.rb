@@ -15,10 +15,9 @@ http://csrc.nist.gov/publications/nistpubs/800-57/sp80057_part1_rev3_general.pdf
 3. CCE-78920-6"
   tag "severity": "medium"
   tag "cis_id": "2.8"
-  tag "cis_control": "No CIS Control"
-  tag "cis_level": "Level 2"
-  tag "nist": ["Not Mapped"]
-  tag "audit": "Via the Management Console: Sign in to the AWS Management
+  tag "cis_control": ["No CIS Control", "6.1"]
+  tag "cis_level": 2
+  tag "audit text": "Via the Management Console: Sign in to the AWS Management
 Console and open the IAM console at
 https://console.aws.amazon.com/iam. In the left navigation pane, choose
 Encryption Keys. Select a customer created master key (CMK) Under the Key

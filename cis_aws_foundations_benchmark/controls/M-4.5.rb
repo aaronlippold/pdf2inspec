@@ -13,11 +13,10 @@ http://docs.aws.amazon.com/AmazonVPC/latest/PeeringGuide/peeringconfigurations-p
 "
   tag "severity": "medium"
   tag "cis_id": "4.5"
-  tag "cis_control": "No CIS Control"
-  tag "cis_level": "Level 2"
-  tag "nist": ["Not Mapped"]
-  tag "audit": "Review routing tables of peered VPCs for whether they route all
-subnets of each VPC and
+  tag "cis_control": ["No CIS Control", "6.1"]
+  tag "cis_level": 2
+  tag "audit text": "Review routing tables of peered VPCs for whether they
+route all subnets of each VPC and
 whether that is necessary to accomplish the intended purposes for peering the
 VPCs.
 Via CLI: List all the route tables from a VPC and check if 'GatewayId' is

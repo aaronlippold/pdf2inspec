@@ -25,11 +25,10 @@ aliases and PABX hunt groups. "
 https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/manage-accountpayment.html#contact-info"
   tag "severity": "medium"
   tag "cis_id": "1.19"
-  tag "cis_control": "No CIS Control"
-  tag "cis_level": "Level 1"
-  tag "nist": ["Not Mapped"]
-  tag "audit": "This activity can only be performed via the AWS Console, with a
-user who has permission
+  tag "cis_control": ["No CIS Control", "6.1"]
+  tag "cis_level": 1
+  tag "audit text": "This activity can only be performed via the AWS Console,
+with a user who has permission
 to read and write Billing information (aws-portal:*Billing ).Sign in to the AWS
 Management Console and open the Billing and Cost Management
 console at https://console.aws.amazon.com/billing/home#/.

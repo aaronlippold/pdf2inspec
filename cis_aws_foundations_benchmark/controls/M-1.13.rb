@@ -17,11 +17,11 @@ emits a time-sensitive key and have knowledge of a credential. "
   tag "ref": "1. CCE-78911-5 2. CIS CSC v6.0 #5.6, #11.4, #12.6, #16.11"
   tag "severity": "medium"
   tag "cis_id": "1.13"
-  tag "cis_control": "5.6 11.4 12.6 16.11"
-  tag "cis_level": "Level 1"
-  tag "nist": ["IA-2 (1)"]
-  tag "audit": "Perform the following to determine if the root account has MFA
-setup: Run the following command:
+  tag "cis_control": [["5.6", "11.4", "12.6", "16.11"], "6.1"]
+  tag "cis_level": 1
+  tag "nist": [["IA-2 (1)", 4], ["SC-23", 4], ["IA-2 (1)", 4], ["IA-2 (1)", 4]]
+  tag "audit text": "Perform the following to determine if the root account has
+MFA setup: Run the following command:
 aws iam get-account-summary | grep 'AccountMFAEnabled' Ensure the
 AccountMFAEnabled property is set to 1
 "

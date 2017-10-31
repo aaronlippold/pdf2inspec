@@ -13,12 +13,12 @@ http://docs.aws.amazon.com/AmazonCloudWatch/latest/DeveloperGuide/viewing
 _metrics_with_cloudwatch.html 2. CCE-79187-1 3. CIS CSC v6.0 #5.5"
   tag "severity": "medium"
   tag "cis_id": "3.2"
-  tag "cis_control": "5.5"
-  tag "cis_level": "Level 1"
-  tag "nist": ["AU-2"]
-  tag "audit": "Perform the following to determine if the account is configured
-as prescribed: Identify the log group name configured for use with CloudTrail:
-
+  tag "cis_control": [["5.5"], "6.1"]
+  tag "cis_level": 1
+  tag "nist": [["AU-2", 4]]
+  tag "audit text": "Perform the following to determine if the account is
+configured as prescribed: Identify the log group name configured for use with
+CloudTrail:
 aws cloudtrail describe-trails Note the <cloudtrail_log_group_name> value
 associated with
 CloudWatchLogsLogGroupArn:

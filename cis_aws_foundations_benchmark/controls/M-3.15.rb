@@ -15,10 +15,9 @@ published to SNS topics. "
   tag "ref": "1. https://aws.amazon.com/sns/"
   tag "severity": "medium"
   tag "cis_id": "3.15"
-  tag "cis_control": "No CIS Control"
-  tag "cis_level": "Level 1"
-  tag "nist": ["Not Mapped"]
-  tag "audit": "Perform the following to ensure appropriate subscribers:
+  tag "cis_control": ["No CIS Control", "6.1"]
+  tag "cis_level": 1
+  tag "audit text": "Perform the following to ensure appropriate subscribers:
 Via the AWS Management console: Sign in to the AWS Management Console and open
 the SNS console
 at https://console.aws.amazon.com/sns/ Click on Topics in the left navigation

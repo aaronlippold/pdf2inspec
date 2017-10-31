@@ -51,7 +51,8 @@ class TextCleaner
   end
 
   def remove_special(extracted_data)
-    extracted_data.gsub(/[\]/, '')
+    extracted_data = extracted_data.gsub(/[\]/, '')
+    extracted_data.gsub(/[\•]/, '')
   end
 
   def remove_extra_space(extracted_data)

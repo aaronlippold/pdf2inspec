@@ -11,11 +11,11 @@ abandoned account to be used. "
   tag "ref": "1. CCE-78900-8 2. CIS CSC v6.0 #16.6"
   tag "severity": "medium"
   tag "cis_id": "1.3"
-  tag "cis_control": "16.6"
-  tag "cis_level": "Level 1"
-  tag "nist": ["IA-4"]
-  tag "audit": "Perform the following to determine if unused credentials exist:
-
+  tag "cis_control": [["16.6"], "6.1"]
+  tag "cis_level": 1
+  tag "nist": [["IA-4", 4]]
+  tag "audit text": "Perform the following to determine if unused credentials
+exist:
 Login to the AWS Management Console
 Click Services
 Click IAM

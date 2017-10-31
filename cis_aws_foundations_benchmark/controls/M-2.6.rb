@@ -14,10 +14,10 @@ useful in security and incident response workflows. "
   tag "ref": "1. CCE-78918-0 2. CIS CSC v6.0 #14.6"
   tag "severity": "medium"
   tag "cis_id": "2.6"
-  tag "cis_control": "14.6"
-  tag "cis_level": "Level 1"
-  tag "nist": ["AU-2"]
-  tag "audit": "Perform the following ensure the CloudTrail S3 bucket has
+  tag "cis_control": [["14.6"], "6.1"]
+  tag "cis_level": 1
+  tag "nist": [["AU-2", 4]]
+  tag "audit text": "Perform the following ensure the CloudTrail S3 bucket has
 access logging is enabled:
 Via the management Console Go to the Amazon CloudTrail console
 at https://console.aws.amazon.com/cloudtrail/home In the API activity history

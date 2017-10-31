@@ -24,10 +24,10 @@ http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazonec2.html
 3. CIS CSC v6.0 #16.14 (someone please check the applicability of this for me)"
   tag "severity": "medium"
   tag "cis_id": "1.21"
-  tag "cis_control": "16.14"
-  tag "cis_level": "Level 2"
-  tag "nist": ["SC-28"]
-  tag "audit": "Whether an Instance Is Associated With a Role
+  tag "cis_control": [["16.14"], "6.1"]
+  tag "cis_level": 2
+  tag "nist": [["SC-28", 4]]
+  tag "audit text": "Whether an Instance Is Associated With a Role
 For instances that are known to perform AWS actions, ensure that they belong to
 an
 instance role that has the necessary permissions: Login to AWS Console (with

@@ -15,11 +15,11 @@ regions is detected. "
   tag "ref": "1. CCE-78913-1 2. CIS CSC v6.0 #14.6"
   tag "severity": "medium"
   tag "cis_id": "2.1"
-  tag "cis_control": "14.6"
-  tag "cis_level": "Level 1"
-  tag "nist": ["AU-2"]
-  tag "audit": "Perform the following to determine if CloudTrail is enabled for
-all regions:
+  tag "cis_control": [["14.6"], "6.1"]
+  tag "cis_level": 1
+  tag "nist": [["AU-2", 4]]
+  tag "audit text": "Perform the following to determine if CloudTrail is
+enabled for all regions:
 Via the management Console Sign in to the AWS Management Console and open the
 CloudTrail console
 at https://console.aws.amazon.com/cloudtrail Click on Trails on the left

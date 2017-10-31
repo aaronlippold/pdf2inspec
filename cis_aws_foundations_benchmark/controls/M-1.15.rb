@@ -13,10 +13,9 @@ and associated answers, to recover root login access. "
   impact 0.5
   tag "severity": "medium"
   tag "cis_id": "1.15"
-  tag "cis_control": "No CIS Control"
-  tag "cis_level": "Level 1"
-  tag "nist": ["Not Mapped"]
-  tag "audit": "Perform the following in the AWS Management Console:
+  tag "cis_control": ["No CIS Control", "6.1"]
+  tag "cis_level": 1
+  tag "audit text": "Perform the following in the AWS Management Console:
 Login to the AWS account as root
 On the top right you will see the <Root_Account_Name>
 Click on the <Root_Account_Name>

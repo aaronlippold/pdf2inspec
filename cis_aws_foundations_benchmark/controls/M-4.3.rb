@@ -12,11 +12,11 @@ security workflows. "
 http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/flow-logs.html"
   tag "severity": "medium"
   tag "cis_id": "4.3"
-  tag "cis_control": "No CIS Control"
-  tag "cis_level": "Level 2"
-  tag "nist": ["Not Mapped"]
-  tag "audit": "Perform the following to determine if VPC Flow logs is enabled:
-
+  tag "cis_control": [["6.5", "12.9"], "6.1"]
+  tag "cis_level": 2
+  tag "nist": [["SI-4 (4)", 4], ["SI-4 (11)", 4]]
+  tag "audit text": "Perform the following to determine if VPC Flow logs is
+enabled:
 Via the Management Console:
 Sign into the management console
 Select Services then VPC

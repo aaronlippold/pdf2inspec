@@ -15,11 +15,11 @@ http://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa.html
 CCE-78901-6 CIS CSC v6.0 #5.6, #11.4, #12.6, #16.11"
   tag "severity": "medium"
   tag "cis_id": "1.2"
-  tag "cis_control": "5.6 11.4 12.6 16.11"
-  tag "cis_level": "Level 1"
-  tag "nist": ["IA-2 (1)"]
-  tag "audit": "Perform the following to determine if a MFA device is enabled
-for all IAM users having a
+  tag "cis_control": [["5.6", "11.4", "12.6", "16.11"], "6.1"]
+  tag "cis_level": 1
+  tag "nist": [["IA-2 (1)", 4], ["SC-23", 4], ["IA-2 (1)", 4], ["IA-2 (1)", 4]]
+  tag "audit text": "Perform the following to determine if a MFA device is
+enabled for all IAM users having a
 console password:
 Via Management Console Open the IAM console at
 https://console.aws.amazon.com/iam/. In the left pane, select Users If the MFA

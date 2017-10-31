@@ -22,12 +22,12 @@ http://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa_enable_ph
 ysical.html#enable-hw-mfa-for-root"
   tag "severity": "medium"
   tag "cis_id": "1.14"
-  tag "cis_control": "No CIS Control"
-  tag "cis_level": "Level 2"
-  tag "nist": ["Not Mapped"]
-  tag "audit": "Perform the following to determine if the root account has a
-hardware MFA setup: Run the following command to list all virtual MFA devices:
-
+  tag "cis_control": [["5.6", "11.4", "12.6", "16.11"], "6.1"]
+  tag "cis_level": 2
+  tag "nist": [["IA-2 (1)", 4], ["SC-23", 4], ["IA-2 (1)", 4], ["IA-2 (1)", 4]]
+  tag "audit text": "Perform the following to determine if the root account has
+a hardware MFA setup: Run the following command to list all virtual MFA
+devices:
 aws iam list-virtual-mfa-devices If the output contains one MFA with the
 following Serial Number, it means the MFA
 is virtual, not hardware and the account is not compliant with this

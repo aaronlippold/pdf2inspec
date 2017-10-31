@@ -11,12 +11,11 @@ tables will help ensure that all VPC traffic flows through an expected path. "
   tag "ref": "1. CCE-79198-8"
   tag "severity": "medium"
   tag "cis_id": "3.13"
-  tag "cis_control": "No CIS Control"
-  tag "cis_level": "Level 1"
-  tag "nist": ["Not Mapped"]
-  tag "audit": "Perform the following to determine if the account is configured
-as prescribed: Identify the log group name configured for use with CloudTrail:
-
+  tag "cis_control": ["No CIS Control", "6.1"]
+  tag "cis_level": 1
+  tag "audit text": "Perform the following to determine if the account is
+configured as prescribed: Identify the log group name configured for use with
+CloudTrail:
 aws cloudtrail describe-trails Note the <cloudtrail_log_group_name> value
 associated with
 CloudWatchLogsLogGroupArn:

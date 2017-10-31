@@ -15,9 +15,9 @@ class ControlParser < Parslet::Parser
     header >>
     applicability >>
     description >>
-    rationale >>
-    audit >>
-    remediation >>
+    rationale.maybe >>
+    audit.maybe >>
+    remediation.maybe >>
     impact.maybe >>
     default_value.maybe >>
     references.maybe >>
@@ -65,7 +65,7 @@ class ControlParser < Parslet::Parser
 
   rule :applicability do
     str('Profile Applicability:') >>
-    newline >>
+    newline.maybe >>
     space? >>
     applicabilityValue
   end

@@ -9,10 +9,9 @@ organization that is best equipped to respond to them. "
   tag "ref": "1. CCE-79200-2"
   tag "severity": "medium"
   tag "cis_id": "1.20"
-  tag "cis_control": "No CIS Control"
-  tag "cis_level": "Level 1"
-  tag "nist": ["Not Mapped"]
-  tag "audit": "Perform the following in the AWS Management Console to
+  tag "cis_control": ["No CIS Control", "6.1"]
+  tag "cis_level": 1
+  tag "audit text": "Perform the following in the AWS Management Console to
 determine if security contact
 information is present:
 Click on your account name at the top right corner of the console

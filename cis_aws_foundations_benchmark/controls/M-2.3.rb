@@ -11,10 +11,9 @@ affected account's use or configuration. "
   tag "ref": "1. CCE-78915-6"
   tag "severity": "medium"
   tag "cis_id": "2.3"
-  tag "cis_control": "No CIS Control"
-  tag "cis_level": "Level 1"
-  tag "nist": ["Not Mapped"]
-  tag "audit": "Perform the following to determine if any public access is
+  tag "cis_control": ["No CIS Control", "6.1"]
+  tag "cis_level": 1
+  tag "audit text": "Perform the following to determine if any public access is
 granted to an S3 bucket via an
 ACL or S3 bucket policy:
 Via the Management Console Go to the Amazon CloudTrail console
