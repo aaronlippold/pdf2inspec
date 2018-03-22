@@ -17,12 +17,14 @@ class TextCleaner
     clean_special = remove_special(clean_whitespace)
     clean_no_space = remove_extra_space(clean_special)
     clean_data = separate_controls(clean_no_space)
+
     return clean_data
   end
 
   # Removes everything before and after the controls
   def isolate_controls_data(extracted_data)
     controls_data = /^1\.1\s.*?(?<=\)$)(?:.*\n)*?(?=Appendix)/.match(extracted_data).to_s
+    controls_data = /^1\.1\s.*?(?<=\)$)(?:.*\n)*?(?=Control)/.match(extracted_data).to_s
     return controls_data
   end
 
@@ -59,4 +61,5 @@ class TextCleaner
     clean_data = extracted_data.gsub(/\n\n\n/, '')
     clean_data.gsub(/(\n\n(?!^\d\.\d{1,}.*\n?.*?))/, '')
   end
+  
 end

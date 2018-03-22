@@ -49,11 +49,12 @@ class ControlParser < Parslet::Parser
     str('Default Value:').absent? >>
     str('References:').absent? >>
     str('CIS Controls:').absent? >>
-    str("\n\n").absent?
+    header.absent?
+    # str("\n\n").absent? 
   end
 
   rule(:header) do
-    (real.as(:section_num) >>
+    (section_num.as(:section_num) >>
     title.as(:title) >>
     score.as(:score)).as(:header) >>
     newline
@@ -79,52 +80,59 @@ class ControlParser < Parslet::Parser
      words).maybe).as(:applicability) >>
     newline
   end
+  
+  rule :section_num do
+    integer.repeat(1) >>
+    dot >>
+    integer.repeat(1) >>
+    space
+  end
 
   rule :description do
     str('Description:') >>
-    newline >>
+    newline.maybe >>
     lines('Rationale:').as(:description)
   end
 
   rule :rationale do
     str('Rationale:') >>
-    newline >>
+    newline.maybe >>
     lines('Audit:').as(:rationale)
   end
 
   rule :audit do
     str('Audit:') >>
-    newline >>
+    newline.maybe >>
     lines('Remediation:').as(:audit)
   end
 
   rule :remediation do
     str('Remediation:') >>
-    newline >>
+    newline.maybe >>
     lines('Impact:').as(:remediation)
   end
 
   rule :impact do
     str('Impact:') >>
-    newline >>
+    newline.maybe >>
     lines('Default Value:').as(:impact)
   end
 
   rule :default_value do
     str('Default Value:') >>
-    newline >>
+    newline.maybe >>
     lines('References:').as(:default_value)
   end
 
   rule :references do
     str('References:') >>
-    newline >>
+    newline.maybe >>
     lines('CIS Controls:').as(:references)
   end
 
   rule :cis_controls do
     str('CIS Controls:') >>
-    newline >>
+    newline.maybe >>
     lines("\n").as(:cis_controls) >>
     newline.maybe
   end
@@ -167,7 +175,7 @@ class ControlParser < Parslet::Parser
   end
 
   rule :word do
-    match('[a-zA-Z0-9/,\.:\'\"*]').repeat(1)
+    match('[a-zA-Z0-9/,\.:\'$_\"*]').repeat(1)
   end
 
   rule :words do
@@ -183,7 +191,7 @@ class ControlParser < Parslet::Parser
   end
 
   def lines(ending)
-    line(ending).as(:line).repeat(1)
+    line(ending).as(:line).repeat
   end
 
   rule(:eol?) { str("\n").maybe }
@@ -196,7 +204,8 @@ class ControlParser < Parslet::Parser
   rule :real do
     integer.repeat(1) >>
     dot >>
-    integer.repeat(1)
+    integer.repeat(1) >>
+    dot.absent?
   end
 
   rule(:score) { lparn >> scored >> rparn }
@@ -248,6 +257,9 @@ class Trans < Parslet::Transform
   rule(:header => simple(:header), :applicability => simple(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
        :audit => sequence(:audit), :remediation => sequence(:remediation)) { {:title => header.to_s , :level => applicability.to_s,
         :descr => description[0].to_s + rationale[0].to_s, :check => audit[0].to_s, :fix => remediation[0].to_s} }
+  rule(:header => simple(:header), :applicability => simple(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
+       :audit => sequence(:audit), :remediation => sequence(:remediation), :default_value => sequence(:default_value),) { {:title => header.to_s , :level => applicability.to_s,
+        :descr => description[0].to_s + rationale[0].to_s, :check => audit[0].to_s, :fix => remediation[0].to_s, :default => default_value[0].to_s} }
 end
 
 class PrepareData
