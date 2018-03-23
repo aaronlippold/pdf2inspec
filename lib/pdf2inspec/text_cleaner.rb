@@ -24,14 +24,14 @@ class TextCleaner
   # Removes everything before and after the controls
   def isolate_controls_data(extracted_data)
     extracted_data = extracted_data.gsub('???', '')
-    controls_data = /^1\.1\s.*?(?<=\)\s)(.*\n)*?(?=\s*Control)/.match(extracted_data).to_s
+    controls_data = /^1\.1\s.*?(?<=\)$)(.*\n)*?(?=\s*Control)/.match(extracted_data).to_s
     return controls_data
   end
 
   # Removes all pagenumbers between the controls
   def remove_pagenum(extracted_data)
     clean_pagenum = extracted_data.gsub(/(\d{1,3}\|Page|\d{1,3} \| P a g e)/, '').to_s
-    clean_pagenum = extracted_data.gsub(/(\d{1,3} \| Page)/, '').to_s
+    clean_pagenum = clean_pagenum.gsub(/(\d{1,3} \| Page)/, '').to_s
     return clean_pagenum
   end
 
@@ -60,7 +60,9 @@ class TextCleaner
   def remove_extra_space(extracted_data)
     clean_data = extracted_data.gsub(/\n\n\n/, "\n")
     clean_data = clean_data.gsub(/\t\n/, "\n")
-    clean_data = clean_data.gsub(/\t/, ' ')
+    clean_data = clean_data.gsub(/\t/, '')
+    clean_data = clean_data.gsub(/\r/, '')
+    clean_data = clean_data.gsub(/\s\s/, ' ')
     clean_data.gsub(/(\n\n(?!^\d\.\d{1,}.*\n?.*?))/, '')
   end
   

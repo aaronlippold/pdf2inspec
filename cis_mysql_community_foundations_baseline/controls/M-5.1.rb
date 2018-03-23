@@ -4,11 +4,11 @@ control "M-5.1" do
   desc  "The mysql.user and mysql.db tables list a variety of privileges that
 can be granted (or denied) to MySQL users.   Some of the privileges of concern
 include:  Select_priv, Insert_priv, Update_priv, Delete_priv, Drop_priv, and so
-on. Typically, these privileges should not be available to every MySQL user and
-often are reserved for administrative use only. Limiting the accessibility of
-the 'mysql' database will protect the confidentiality, integrity, and
-availability of the data housed within MySQL. A user which has direct access to
-mysql.* might view password hashes, change permissions, or alter or destroy
+on.  Typically, these privileges should not be available to every MySQL user
+and often are reserved for administrative use only. Limiting the accessibility
+of the 'mysql' database will protect the confidentiality, integrity, and
+availability of the data housed within MySQL.  A user which has direct access
+to mysql.* might view password hashes, change permissions, or alter or destroy
 information intentionally or unintentionally. "
   impact 0.5
   tag "severity": "medium"
@@ -32,15 +32,13 @@ AND ((Select_priv = 'Y')
 OR (Insert_priv = 'Y')
 OR (Update_priv = 'Y')
 OR (Delete_priv = 'Y')
-
 OR (Create_priv = 'Y')
-OR (Drop_priv = 'Y'));
-Ensure all users returned are administrative users.
+OR (Drop_priv = 'Y')); Ensure all users returned are administrative users.
 "
   tag "fix": "Perform the following actions to remediate this setting:
-Enumerate non-administrative users resulting from the audit
-procedure For each non-administrative user, use the REVOKE statement to
-remove privileges as
+Enumerate non-­‐administrative users resulting from the audit procedure For
+each non-­‐administrative user, use the REVOKE statement to remove privileges
+as
 appropriate
 "
 end

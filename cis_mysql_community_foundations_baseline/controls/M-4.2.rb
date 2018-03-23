@@ -4,10 +4,10 @@ control "M-4.2" do
 test. It is recommended that the test database be dropped. The test database
 can be accessed by all users and can be used to consume system resources.
 Dropping the test database will reduce the attack surface of the MySQL server.
- "
+"
   impact 0.5
   tag "ref": "1.
-http://dev.mysql.com/doc/refman/5.7/en/mysql-secure-installation.html"
+http://dev.mysql.com/doc/refman/5.7/en/mysql-­‐secure-­‐installation.html"
   tag "severity": "medium"
   tag "cis_id": "4.2"
   tag "cis_control": ["No CIS Control", "6.1"]
@@ -17,11 +17,10 @@ test database is present:
 SHOW DATABASES LIKE 'test';
 The above SQL statement will return zero rows
 "
-  tag "fix": "Execute the following SQL statement to drop the test
-database:
+  tag "fix": "Execute the following SQL statement to drop the test database:
 DROP DATABASE 'test';
-Note: mysql_secure_installation performs this operation as
-well as other security-
+Note: mysql_secure_installation performs this operation as well as other
+security-­‐
 related activities.
 "
 end

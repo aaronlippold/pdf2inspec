@@ -13,14 +13,14 @@ compromised. "
   tag "cis_id": "2.2"
   tag "cis_control": ["No CIS Control", "6.1"]
   tag "cis_level": 1
-  tag "audit text": "Verify there are no other roles enabled for the
-underlyingperating system and that no
-additional applications or services unrelated to the properperation of the
+  tag "audit text": "Verify there are no other roles enabled for the underlying
+operating system and that no
+additional applications or services unrelated to the proper operation of the
 MySQL server
 software are installed.
 "
-  tag "fix": "Remove excess applications or services and/or remove
-unnecessary roles from the
+  tag "fix": "Remove excess applications or services and/or remove unnecessary
+roles from the
 underlying operating system.
 "
 end

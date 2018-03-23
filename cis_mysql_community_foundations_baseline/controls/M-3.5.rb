@@ -15,16 +15,13 @@ the MySQL logs. "
   tag "cis_level": 1
   tag "audit text": "Perform the following steps to assess this recommendation:
 
-Find the relay_log_basename value by executing the following
-statement
-show variables like 'relay_log_basename';
- Verify permissions are 660 for mysql:mysql for each file of
-the
+Find the relay_log_basename value by executing the following statement
+show variables like 'relay_log_basename'; Verify permissions are 660 for
+mysql:mysql for each file of the
 form <relay_log_basename>
 "
   tag "fix": "Execute the following command for each log file location
 requiring corrected permissions:
-
 chmod 660 <log file>
 chown mysql:mysql <log file>
 "

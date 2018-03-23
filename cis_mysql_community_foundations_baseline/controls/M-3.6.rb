@@ -13,16 +13,12 @@ the MySQL logs. "
   tag "cis_control": ["No CIS Control", "6.1"]
   tag "cis_level": 1
   tag "audit text": "Perform the following steps to assess this recommendation:
-
- Find the general_log_file value by executing the following
-statement
-show variables like 'general_log_file';
- Verify permissions are 660 for mysql:mysql for the indicated
-general_log_file.
+Find the general_log_file value by executing the following statement
+show variables like 'general_log_file'; Verify permissions are 660 for
+mysql:mysql for the indicated general_log_file.
 "
   tag "fix": "Execute the following command for each log file location
 requiring corrected permissions:
-
 chmod 660 <log file>
 chown mysql:mysql <log file>
 "

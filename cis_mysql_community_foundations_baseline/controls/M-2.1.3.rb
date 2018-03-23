@@ -9,7 +9,6 @@ for this user should be protected "
   tag "cis_control": ["No CIS Control", "6.1"]
   tag "cis_level": 1
   tag "audit text": "Check permissions of files containing passwords and/or ssl
-
 keys.
 "
   tag "fix": "Change file permissions

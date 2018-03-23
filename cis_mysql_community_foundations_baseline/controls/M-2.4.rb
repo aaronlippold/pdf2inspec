@@ -8,12 +8,12 @@ the impact of a compromised MySQL account.  "
   tag "cis_id": "2.4"
   tag "cis_control": ["No CIS Control", "6.1"]
   tag "cis_level": 1
-  tag "audit text": "Each user should be linked to one of these
- system accounts
- a person
- an application
+  tag "audit text": "Each user should be linked to one of these system accounts
+
+a person
+an application
 "
-  tag "fix": "Add/Remove users so that each user is only used for one
-specific purpose.
+  tag "fix": "Add/Remove users so that each user is only used for one specific
+purpose.
 "
 end

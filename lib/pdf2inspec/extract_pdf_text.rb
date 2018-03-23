@@ -19,8 +19,10 @@ class ExtractPdfText
     txt_file = File.basename(@pdf_name, File.extname(@pdf_name)) + '.txt'
     txt_filename = Dir.tmpdir + '/' + txt_file
     
-    File.open('data/CIS_Oracle_MySQL_Community_Server_5.7_Benchmark_v1.0.0.txt').each do |line|
-      @extracted_text += line.to_s.lstrip
+    File.open(txt_filename).each do |line|
+      line = line.strip.gsub(/\A\p{Space}*|\p{Space}*\z/, '') + "\n"
+      line = line.gsub(/\p{Space}{2}/, ' ')
+      @extracted_text += line
     end
     File.delete(txt_filename)
   end

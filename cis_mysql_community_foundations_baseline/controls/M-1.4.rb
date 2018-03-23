@@ -7,7 +7,7 @@ implies the clear text storage of MySQL credentials. Avoiding this may increase
 assurance that the confidentiality of MySQL credentials is preserved. "
   impact 0.5
   tag "ref": "1.
-http://dev.mysql.com/doc/refman/5.7/en/environment-variables.html 2.
+http://dev.mysql.com/doc/refman/5.7/en/environment-­‐variables.html 2.
 https://blogs.oracle.com/myoraclediary/entry/how_to_check_environment_variabl
 es"
   tag "severity": "medium"
@@ -15,15 +15,13 @@ es"
   tag "cis_control": ["No CIS Control", "6.1"]
   tag "cis_level": 1
   tag "audit text": "To assess this recommendation, use the /proc filesystem to
-
 determine if MYSQL_PWD is
 currently set for any process
 grep MYSQL_PWD /proc/*/environ
-This may return one entry for the process which is
-executing the grep command.
+This may return one entry for the process which is executing the grep command.
+
 "
   tag "fix": "Check which users and/or scripts are setting MYSQL_PWD and change
-
 them to use a more
 secure method.
 "

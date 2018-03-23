@@ -14,12 +14,10 @@ the MySQL logs. "
   tag "cis_control": ["No CIS Control", "6.1"]
   tag "cis_level": 1
   tag "audit text": "Perform the following steps to assess this recommendation:
-
- Identify the basename of binary log files (log_bin_basename)by
-executing the
+Identify the basename of binary log files (log_bin_basename)by executing the
 following statement
-show variables like 'log_bin_basename';
- Verify permissions are 660 for mysql:mysql on each log filef the form
+show variables like 'log_bin_basename'; Verify permissions are 660 for
+mysql:mysql on each log file of the form
 log_bin_basename.nnnnnn.
 "
   tag "fix": "Execute the following command for each log file location

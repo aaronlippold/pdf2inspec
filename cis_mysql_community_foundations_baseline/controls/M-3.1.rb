@@ -14,10 +14,9 @@ a view definition. "
   tag "cis_control": ["No CIS Control", "6.1"]
   tag "cis_level": 1
   tag "audit text": "Perform the following steps to assess this recommendation:
-
- Execute the following SQL statement to determine the Valuef datadir
-show variables where variable_name = 'datadir';
- Execute the following command at a terminal prompt
+Execute the following SQL statement to determine the Value of datadir
+show variables where variable_name = 'datadir'; Execute the following command
+at a terminal prompt
 ls -l <datadir>/.. | egrep
 '^d[r|w|x]{3}------\\s*.\\s*mysql\\s*mysql\\s*\\d*.*mysql'
 Lack of output implies a finding.

@@ -3,16 +3,16 @@ control "M-9.4" do
 (Scored)"
   desc  "The SUPER privilege found in the mysql.user table governs the use of a
 variety of MySQL features.  These features include, CHANGE MASTER TO, KILL,
-mysqladmin kill option, PURGE  BINARY LOGS, SET GLOBAL, mysqladmin debug
-option, logging control, and more. The SUPER privilege allows principals to
-perform many actions, including view and terminate currently executing MySQL
-statements (including statements used to manage passwords). This privilege also
-provides the ability to configure MySQL, such as enable/disable logging, alter
-data, disable/enable features. Limiting the accounts that have the SUPER
-privilege reduces the chances that an attacker can exploit these capabilities. "
+mysqladmin kill option, PURGE BINARY LOGS, SET GLOBAL, mysqladmin debug option,
+logging control, and more. The SUPER privilege allows principals to perform
+many actions, including view and terminate currently executing MySQL statements
+(including statements used to manage passwords). This privilege also provides
+the ability to configure MySQL, such as enable/disable logging, alter data,
+disable/enable features.  Limiting the accounts that have the SUPER privilege
+reduces the chances that an attacker can exploit these capabilities. "
   impact 0.5
   tag "ref": "1.
-http://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_super"
+http://dev.mysql.com/doc/refman/5.7/en/privileges-­‐provided.html#priv_super"
   tag "severity": "medium"
   tag "cis_id": "9.4"
   tag "cis_control": ["No CIS Control", "6.1"]
@@ -21,14 +21,11 @@ http://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_super"
 
 select user, host from mysql.user where user='repl' and Super_priv = 'Y';
 No rows should be returned.
-NOTE: Substitute your replication user's name for repl in the
-above query.
+NOTE: Substitute your replication user's name for repl in the above query.
 "
   tag "fix": "Execute the following steps to remediate this setting: Enumerate
-the replication users found in the result set of
-the audit procedure For each replication user, issue the following SQL
-statement (replace
-'repl' with
+the replication users found in the result set of the audit procedure For each
+replication user, issue the following SQL statement (replace 'repl' with
 your replication user's name):
 REVOKE SUPER ON *.* FROM 'repl';
 "

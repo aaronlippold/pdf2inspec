@@ -6,7 +6,7 @@ A value of 2 enables logging of error and warning messages, and a value of 3
 enables logging of error, warning and note messages. This might help to detect
 malicious behavior by logging communication errors and aborted connections. "
   impact 0.5
-  tag "ref": "1. https://dev.mysql.com/doc/refman/5.7/en/server-system-
+  tag "ref": "1. https://dev.mysql.com/doc/refman/5.7/en/server-­‐system-­‐
 variables.html#sysvar_log_error_verbosity"
   tag "severity": "medium"
   tag "cis_id": "6.3"
@@ -18,8 +18,8 @@ SHOW GLOBAL VARIABLES LIKE 'log_error_verbosity';
 Ensure the Value returned equals 2 or 3.
 "
   tag "fix": "Perform the following actions to remediate this setting:
- Open the MySQL configuration file (my.cnf)
- Ensure the following line is found in the mysqld section
+Open the MySQL configuration file (my.cnf)
+Ensure the following line is found in the mysqld section
 log_error_verbosity = 2
 The value can be 2 or 3.
 "

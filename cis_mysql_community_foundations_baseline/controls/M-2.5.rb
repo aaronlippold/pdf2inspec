@@ -1,6 +1,6 @@
 control "M-2.5" do
-  title "2.5 Do Not Use Default or Non-MySQL-specific Cryptographic Keys (Not
-Scored)"
+  title "2.5 Do Not Use Default or Non-­‐MySQL-­‐specific Cryptographic Keys
+(Not Scored)"
   desc  "The SSL certificate and key used by MySQL should be used only for
 MySQL and only for one instance. Use of default certificates can allow an
 attacker to impersonate the MySQL server. "

@@ -9,10 +9,10 @@ information and might leak passwords. "
   tag "cis_control": ["No CIS Control", "6.1"]
   tag "cis_level": 1
   tag "audit text": "Check if the replication traffic is using
- A private network
- A VPN
- SSL/TLS
- A SSH Tunnel
+A private network
+A VPN
+SSL/TLS
+A SSH Tunnel
 "
   tag "fix": "Secure the network traffic
 "

@@ -9,7 +9,7 @@ error might have been a more secure choice. For example, by default MySQL will
 truncate data if it does not fit in a field, which can lead to unknown
 behavior, or be leveraged by an attacker to circumvent data validation. "
   impact 0.5
-  tag "ref": "1. http://dev.mysql.com/doc/refman/5.7/en/sql-mode.html"
+  tag "ref": "1. http://dev.mysql.com/doc/refman/5.7/en/sql-­‐mode.html"
   tag "severity": "medium"
   tag "cis_id": "4.9"
   tag "cis_control": ["No CIS Control", "6.1"]
@@ -20,7 +20,6 @@ SHOW VARIABLES LIKE 'sql_mode';
 Ensure that STRICT_ALL_TABLES is in the list returned.
 "
   tag "fix": "Perform the following actions to remediate this setting: Add
-STRICT_ALL_TABLES to the sql_mode in the server's
-configuration file
+STRICT_ALL_TABLES to the sql_mode in the server's configuration file
 "
 end

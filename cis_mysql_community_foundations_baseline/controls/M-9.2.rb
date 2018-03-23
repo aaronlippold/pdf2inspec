@@ -10,15 +10,16 @@ being made.  In this case, the slave (client) should verify the master's
 (server's) certificate to authenticate the master prior to continuing the
 connection. "
   impact 0.5
-  tag "ref": "1. https://dev.mysql.com/doc/refman/5.6/en/change-master-to.html"
+  tag "ref": "1.
+https://dev.mysql.com/doc/refman/5.6/en/change-­‐master-­‐to.html"
   tag "severity": "medium"
   tag "cis_id": "9.2"
   tag "cis_control": ["No CIS Control", "6.1"]
   tag "cis_level": 1
   tag "audit text": "To assess this recommendation, issue the following
 statement:
-select ssl_verify_server_cert from mysql.slave_master_info;
-Verify the value of ssl_verify_server_cert is 1.
+select ssl_verify_server_cert from mysql.slave_master_info; Verify the value of
+ssl_verify_server_cert is 1.
 "
   tag "fix": "To remediate this setting you must use the CHANGE MASTER TO
 command.

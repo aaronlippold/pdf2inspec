@@ -7,7 +7,7 @@ Enabling error logging may increase the ability to detect malicious attempts
 against MySQL, and other critical messages, such as if the error log is not
 enabled then connection error might go unnoticed. "
   impact 0.5
-  tag "ref": "1. http://dev.mysql.com/doc/refman/5.7/en/error-log.html"
+  tag "ref": "1. http://dev.mysql.com/doc/refman/5.7/en/error-­‐log.html"
   tag "severity": "medium"
   tag "cis_id": "6.1"
   tag "cis_control": ["No CIS Control", "6.1"]
@@ -15,7 +15,6 @@ enabled then connection error might go unnoticed. "
   tag "audit text": "Execute the following SQL statement to audit this setting:
 
 SHOW variables LIKE 'log_error';
-
 Ensure the Value returned is not empty.
 "
   tag "fix": "Perform the following actions to remediate this setting: Open the

@@ -7,7 +7,7 @@ plugin can access and modify the data. However, not all data is exposed by
 default. "
   impact 0.5
   tag "ref": "1.
-http://dev.mysql.com/doc/refman/5.7/en/innodb-memcached-security.html"
+http://dev.mysql.com/doc/refman/5.7/en/innodb-­‐memcached-­‐security.html"
   tag "severity": "medium"
   tag "cis_id": "4.7"
   tag "cis_control": ["No CIS Control", "6.1"]
@@ -15,11 +15,10 @@ http://dev.mysql.com/doc/refman/5.7/en/innodb-memcached-security.html"
   tag "audit text": "Execute the following SQL statement to assess this
 recommendation:
 SELECT * FROM information_schema.plugins WHERE PLUGIN_NAME='daemon_memcached'
-
 Ensure that no rows are returned.
 "
-  tag "fix": "To remediate this setting, issue the following command in
-the MySQL command-line client:
+  tag "fix": "To remediate this setting, issue the following command in the
+MySQL command-­‐line client:
 uninstall plugin daemon_memcached;
 This uninstalls the memcached plugin from the MySQL server.
 "

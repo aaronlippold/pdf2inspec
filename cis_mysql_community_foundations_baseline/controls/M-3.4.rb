@@ -13,18 +13,15 @@ the MySQL logs. "
   tag "cis_control": ["No CIS Control", "6.1"]
   tag "cis_level": 1
   tag "audit text": "Perform the following steps to assess this recommendation:
+Find the slow_query_log value (<slow_query_log_path>)by executing the following
 
- Find the slow_query_log value (<slow_query_log_path>)by
-executing the following
 statement
-show variables like 'slow_query_log_file';
- Verify permissions are 660 for mysql:mysql for
-<slow_query_log_path>
+show variables like 'slow_query_log_file'; Verify permissions are 660 for
+mysql:mysql for <slow_query_log_path>
 "
   tag "fix": "Execute the following command for each log file location
 requiring corrected permissions:
 chmod 660 <log file>
 chown mysql:mysql <log file>
-
 "
 end
