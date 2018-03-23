@@ -47,6 +47,10 @@ class Pdf2Inspec
 
   def clean_pdf_text
     @clean_text = TextCleaner.new.clean_data(@pdf_text)
+    # File.open('data/debug_text').each do |line|
+    #   @clean_text += line.to_s
+    # end
+    # p @clean_text
     write_clean_text if @debug
   end
 

@@ -11,26 +11,27 @@ class TextCleaner
   # Cleans control information from passed in file
   def clean_controls(extracted_data)
     controls_data = isolate_controls_data(extracted_data)
-    clean_pagenum = remove_pagenum(controls_data)
-    clean_section_header = remove_section_header(clean_pagenum)
+    clean_section_header = remove_section_header(controls_data)
     clean_whitespace = remove_newline_in_controls(clean_section_header)
     clean_special = remove_special(clean_whitespace)
     clean_no_space = remove_extra_space(clean_special)
-    clean_data = separate_controls(clean_no_space)
-
+    clean_pagenum = remove_pagenum(clean_no_space)
+    clean_data = separate_controls(clean_pagenum)
+    # p clean_data
     return clean_data
   end
 
   # Removes everything before and after the controls
   def isolate_controls_data(extracted_data)
-    controls_data = /^1\.1\s.*?(?<=\)$)(?:.*\n)*?(?=Appendix)/.match(extracted_data).to_s
-    controls_data = /^1\.1\s.*?(?<=\)$)(?:.*\n)*?(?=Control)/.match(extracted_data).to_s
+    extracted_data = extracted_data.gsub('???', '')
+    controls_data = /^1\.1\s.*?(?<=\)\s)(.*\n)*?(?=\s*Control)/.match(extracted_data).to_s
     return controls_data
   end
 
   # Removes all pagenumbers between the controls
   def remove_pagenum(extracted_data)
     clean_pagenum = extracted_data.gsub(/(\d{1,3}\|Page|\d{1,3} \| P a g e)/, '').to_s
+    clean_pagenum = extracted_data.gsub(/(\d{1,3} \| Page)/, '').to_s
     return clean_pagenum
   end
 
@@ -48,17 +49,18 @@ class TextCleaner
 
   # adds whitespace between different controls
   def separate_controls(extracted_data)
-    add_whitespace_between_controls = extracted_data.gsub(/((?=^\d\.\d{1,}.*\n?.*?(?<=\)$)))/, "\n").to_s
-    return add_whitespace_between_controls
+    add_whitespace_between_controls = extracted_data.gsub(/((?=^\s*?\d\.\d{1,}.*\n?.*?(?<=\)$)))/, "\n").to_s
   end
 
   def remove_special(extracted_data)
     extracted_data = extracted_data.gsub(/[\]/, '')
-    extracted_data.gsub(/[\•]/, '')
+    extracted_data = extracted_data.gsub(/[\•]/, '')
   end
 
   def remove_extra_space(extracted_data)
-    clean_data = extracted_data.gsub(/\n\n\n/, '')
+    clean_data = extracted_data.gsub(/\n\n\n/, "\n")
+    clean_data = clean_data.gsub(/\t\n/, "\n")
+    clean_data = clean_data.gsub(/\t/, ' ')
     clean_data.gsub(/(\n\n(?!^\d\.\d{1,}.*\n?.*?))/, '')
   end
   

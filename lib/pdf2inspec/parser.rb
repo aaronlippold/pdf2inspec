@@ -1,43 +1,26 @@
 require 'parslet'
 require 'parslet/convenience'
+require 'pp'
 
 class ControlParser < Parslet::Parser
 
   root :controls
 
   rule :controls do
-    newline.maybe >>
-    control.repeat(1) >>
-    newline.maybe
+    control.repeat(1)
   end
 
   rule :control do
     header >>
     applicability >>
-    description >>
+    description.maybe >>
     rationale.maybe >>
     audit.maybe >>
     remediation.maybe >>
     impact.maybe >>
     default_value.maybe >>
     references.maybe >>
-    cis_controls.maybe >>
-    newline.maybe >>
-    newline.maybe
-  end
-
-  rule :attribute do
-    header.absent? >>
-    (
-    description |
-    rationale |
-    audit |
-    remediation |
-    impact |
-    default_value |
-    references |
-    cis_controls
-    )
+    cis_controls.maybe
   end
 
   rule :attribute_absent do
@@ -49,11 +32,14 @@ class ControlParser < Parslet::Parser
     str('Default Value:').absent? >>
     str('References:').absent? >>
     str('CIS Controls:').absent? >>
+    str('Profile Applicability::').absent? >>
     header.absent?
     # str("\n\n").absent? 
   end
 
   rule(:header) do
+    newline >>
+    spaces.maybe >>
     (section_num.as(:section_num) >>
     title.as(:title) >>
     score.as(:score)).as(:header) >>
@@ -61,29 +47,18 @@ class ControlParser < Parslet::Parser
   end
 
   rule(:title) do
-    (str('(Scored)').absent? >> str('(Not Scored)').absent? >> str('(Not').absent?  >> (words | lparn | rparn | newline) | space).repeat(1)
+    (str('(Scored)').absent? >> str('(Not Scored)').absent? >> str('(Not').absent? >> str('(Not ').absent?  >> (anyChar | lparn | rparn | newline) | space).repeat(1)
   end
 
   rule :applicability do
     str('Profile Applicability:') >>
     newline.maybe >>
-    space? >>
-    applicabilityValue
-  end
-
-  rule :applicabilityValue do
-    (word >>
-     space >>
-     integer.repeat(1) >>
-     (space >>
-     str('-') >>
-     words).maybe).as(:applicability) >>
-    newline
+    lines('Description:').as(:applicability)
   end
   
   rule :section_num do
-    integer.repeat(1) >>
-    dot >>
+    (integer.repeat(1) >>
+    dot).repeat(1) >>
     integer.repeat(1) >>
     space
   end
@@ -133,8 +108,7 @@ class ControlParser < Parslet::Parser
   rule :cis_controls do
     str('CIS Controls:') >>
     newline.maybe >>
-    lines("\n").as(:cis_controls) >>
-    newline.maybe
+    lines("\n").as(:cis_controls)
   end
 
   rule :blank_line do
@@ -154,7 +128,7 @@ class ControlParser < Parslet::Parser
   end
 
   rule :space do
-    str(' ')
+    match(/\s/)
   end
 
   rule :space? do
@@ -175,7 +149,7 @@ class ControlParser < Parslet::Parser
   end
 
   rule :word do
-    match('[a-zA-Z0-9/,\.:\'$_\"*]').repeat(1)
+    match('[a-zA-Z0-9/,\.:\'$-_\"*]').repeat(1)
   end
 
   rule :words do
@@ -219,47 +193,88 @@ class ControlParser < Parslet::Parser
   end
 
   rule :scored do
-    (str('Scored') | str('Not Scored') | (str('Not') >> newline.maybe >> str('Scored')))
+    (str(' Scored') | str('Scored') | str('Not Scored') | (str('Not ') >> newline.maybe) | (str('Not') >> newline.maybe)).repeat
   end
 end
 
 class Trans < Parslet::Transform
   rule(:line => simple(:text)) { text }
   rule(:section_num => simple(:section), :title => simple(:title), :score => simple(:score)) { section + title + score }
-  rule(:header => simple(:header), :applicability => simple(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
+  rule(:header => simple(:header), :applicability => sequence(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
        :audit => sequence(:audit), :remediation => sequence(:remediation), :impact => sequence(:impact), :default_value => sequence(:default_value),
-       :references => sequence(:references), :cis_controls => sequence(:cis_controls)) { {:title => header.to_s , :level => applicability.to_s,
+       :references => sequence(:references), :cis_controls => sequence(:cis_controls)) { {:title => header.to_s , :level => applicability[0].to_s,
         :descr => description[0].to_s + rationale[0].to_s, :check => audit[0].to_s, :fix => remediation[0].to_s, :impact => impact[0].to_s, :default => default_value[0].to_s,
         :ref => references[0].to_s, :cis => cis_controls[0].to_s} }
-  rule(:header => simple(:header), :applicability => simple(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
+  rule(:header => simple(:header), :applicability => sequence(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
        :audit => sequence(:audit), :remediation => sequence(:remediation),
-       :references => sequence(:references)) { {:title => header.to_s , :level => applicability.to_s,
+       :references => sequence(:references)) { {:title => header.to_s , :level => applicability[0].to_s,
         :descr => description[0].to_s + rationale[0].to_s, :check => audit[0].to_s, :fix => remediation[0].to_s,
         :ref => references[0].to_s } }
-  rule(:header => simple(:header), :applicability => simple(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
+  rule(:header => simple(:header), :applicability => sequence(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
       :audit => sequence(:audit), :remediation => sequence(:remediation), :impact => sequence(:impact),
-      :references => sequence(:references)) { {:title => header.to_s , :level => applicability.to_s,
+      :references => sequence(:references)) { {:title => header.to_s , :level => applicability[0].to_s,
        :descr => description[0].to_s + rationale[0].to_s, :check => audit[0].to_s, :fix => remediation[0].to_s, :impact => impact[0].to_s,
        :ref => references[0].to_s} }
-  rule(:header => simple(:header), :applicability => simple(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
-       :audit => sequence(:audit), :remediation => sequence(:remediation), :impact => sequence(:impact)) { {:title => header.to_s , :level => applicability.to_s,
+  rule(:header => simple(:header), :applicability => sequence(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
+       :audit => sequence(:audit), :remediation => sequence(:remediation), :impact => sequence(:impact)) { {:title => header.to_s , :level => applicability[0].to_s,
         :descr => description[0].to_s + rationale[0].to_s, :check => audit[0].to_s, :fix => remediation[0].to_s, :impact => impact[0].to_s} }
-  rule(:header => simple(:header), :applicability => simple(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
+  rule(:header => simple(:header), :applicability => sequence(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
        :audit => sequence(:audit), :remediation => sequence(:remediation), :default_value => sequence(:default_value),
-       :references => sequence(:references)) { {:title => header.to_s , :level => applicability.to_s,
+       :references => sequence(:references)) { {:title => header.to_s , :level => applicability[0].to_s,
         :descr => description[0].to_s + rationale[0].to_s, :check => audit[0].to_s, :fix => remediation[0].to_s, :default => default_value[0].to_s,
         :ref => references[0].to_s} }
-  rule(:header => simple(:header), :applicability => simple(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
+  rule(:header => simple(:header), :applicability => sequence(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
        :audit => sequence(:audit), :remediation => sequence(:remediation), :impact => sequence(:impact), :default_value => sequence(:default_value),
-       :references => sequence(:references)) { {:title => header.to_s , :level => applicability.to_s,
+       :references => sequence(:references)) { {:title => header.to_s , :level => applicability[0].to_s,
         :descr => description[0].to_s + rationale[0].to_s, :check => audit[0].to_s, :fix => remediation[0].to_s, :impact => impact[0].to_s, :default => default_value[0].to_s,
         :ref => references[0].to_s} }
-  rule(:header => simple(:header), :applicability => simple(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
-       :audit => sequence(:audit), :remediation => sequence(:remediation)) { {:title => header.to_s , :level => applicability.to_s,
+  rule(:header => simple(:header), :applicability => sequence(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
+       :audit => sequence(:audit), :remediation => sequence(:remediation)) { {:title => header.to_s , :level => applicability[0].to_s,
         :descr => description[0].to_s + rationale[0].to_s, :check => audit[0].to_s, :fix => remediation[0].to_s} }
-  rule(:header => simple(:header), :applicability => simple(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
-       :audit => sequence(:audit), :remediation => sequence(:remediation), :default_value => sequence(:default_value),) { {:title => header.to_s , :level => applicability.to_s,
+  rule(:header => simple(:header), :applicability => sequence(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
+       :audit => sequence(:audit), :remediation => sequence(:remediation), :default_value => sequence(:default_value),) { {:title => header.to_s , :level => applicability[0].to_s,
         :descr => description[0].to_s + rationale[0].to_s, :check => audit[0].to_s, :fix => remediation[0].to_s, :default => default_value[0].to_s} }
+  rule(:header => simple(:header), :applicability => sequence(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
+       :audit => sequence(:audit), :remediation => sequence(:remediation)) { {:title => header.to_s , :level => applicability[0].to_s,
+        :descr => description[0].to_s + rationale[0].to_s, :check => audit[0].to_s, :fix => remediation[0].to_s} }
+  rule(:header => simple(:header), :applicability => sequence(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
+       :audit => sequence(:audit), :references => sequence(:references)) { {:title => header.to_s , :level => applicability[0].to_s,
+        :descr => description[0].to_s + rationale[0].to_s, :check => audit[0].to_s, :ref => references[0].to_s} }
+  rule(:header => simple(:header), :applicability => sequence(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
+       :remediation => sequence(:remediation), :impact => sequence(:impact)) { {:title => header.to_s , :level => applicability[0].to_s,
+        :descr => description[0].to_s + rationale[0].to_s, :fix => remediation[0].to_s, :impact => impact[0].to_s} }
+  rule(:header => simple(:header), :applicability => sequence(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
+       :remediation => sequence(:remediation), :impact => sequence(:impact), :references => sequence(:references)) { {:title => header.to_s , :level => applicability[0].to_s,
+        :descr => description[0].to_s + rationale[0].to_s, :fix => remediation[0].to_s, :impact => impact[0].to_s, :ref => references[0].to_s} }
+  rule(:header => simple(:header), :applicability => sequence(:applicability), :description => sequence(:description),
+       :audit => sequence(:audit), :remediation => sequence(:remediation), :default_value => sequence(:default_value),
+       :references => sequence(:references)) { {:title => header.to_s , :level => applicability[0].to_s,
+        :descr => description[0].to_s, :check => audit[0].to_s, :fix => remediation[0].to_s, :default => default_value[0].to_s,
+        :ref => references[0].to_s} }
+  rule(:header => simple(:header), :applicability => sequence(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
+       :audit => sequence(:audit), :impact => sequence(:impact), :default_value => sequence(:default_value)) { {:title => header.to_s , :level => applicability[0].to_s,
+        :descr => description[0].to_s + rationale[0].to_s, :check => audit[0].to_s, :impact => impact[0].to_s, :default => default_value[0].to_s} }
+  rule(:header => simple(:header), :applicability => sequence(:applicability), :rationale => sequence(:rationale),
+       :audit => sequence(:audit), :remediation => sequence(:remediation), :references => sequence(:references)) { {:title => header.to_s , :level => applicability[0].to_s,
+        :descr => rationale[0].to_s, :check => audit[0].to_s, :fix => remediation[0].to_s, :ref => references[0].to_s} }
+  rule(:header => simple(:header), :applicability => sequence(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
+       :remediation => sequence(:remediation), :references => sequence(:references)) { {:title => header.to_s , :level => applicability[0].to_s,
+        :descr => description[0].to_s + rationale[0].to_s, :fix => remediation[0].to_s, :ref => references[0].to_s} }
+  rule(:header => simple(:header), :applicability => sequence(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
+       :audit => sequence(:audit), :default_value => sequence(:default_value), :references => sequence(:references)) { {:title => header.to_s , :level => applicability[0].to_s,
+        :descr => description[0].to_s + rationale[0].to_s, :check => audit[0].to_s, :default => default_value[0].to_s, :ref => references[0].to_s} }
+  rule(:header => simple(:header), :applicability => sequence(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
+       :audit => sequence(:audit), :remediation => sequence(:remediation), :impact => sequence(:impact), :default_value => sequence(:default_value)) { {:title => header.to_s , :level => applicability[0].to_s,
+        :descr => description[0].to_s + rationale[0].to_s, :check => audit[0].to_s, :fix => remediation[0].to_s, :impact => impact[0].to_s, :default => default_value[0].to_s} }
+  rule(:header => simple(:header), :applicability => sequence(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
+       :audit => sequence(:audit), :impact => sequence(:impact), :references => sequence(:references)) { {:title => header.to_s , :level => applicability[0].to_s,
+        :descr => description[0].to_s + rationale[0].to_s, :check => audit[0].to_s, :impact => impact[0].to_s, :ref => references[0].to_s} }
+  rule(:header => simple(:header), :applicability => sequence(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
+       :audit => sequence(:audit), :impact => sequence(:impact)) { {:title => header.to_s , :level => applicability[0].to_s,
+        :descr => description[0].to_s + rationale[0].to_s, :check => audit[0].to_s, :impact => impact[0].to_s} }
+  rule(:header => simple(:header), :applicability => sequence(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
+       :audit => sequence(:audit)) { {:title => header.to_s , :level => applicability[0].to_s,
+        :descr => description[0].to_s + rationale[0].to_s, :check => audit[0].to_s} }
 end
 
 class PrepareData
@@ -270,6 +285,7 @@ class PrepareData
     data = parse(clean_text)
 
     @transformed_data = Trans.new.apply(data)
+    pp @transformed_data
     add_cis
   end
 
