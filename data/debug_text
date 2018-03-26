@@ -48,12 +48,11 @@ Moving the database to a non-­‐system partition may be difficult depending on
 there was only a single partition when the operating system was set up and whether there
 are additional storage available.
 Default Value:
-Not Applicable.
+Not Applicable. 
 
 1.2 Use Dedicated Least Privileged Account for MySQL Daemon/Service
 (Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS on Linux
-
 Description:
 As with any service installed on a host, it can be provided with its own user
 context.  Providing a dedicated user to the service provides the ability to precisely
@@ -74,7 +73,7 @@ user must not have administrative rights to the system.
 References:
 1. http://dev.mysql.com/doc/refman/5.7/en/changing-­‐mysql-­‐user.html
 2. http://dev.mysql.com/doc/refman/5.7/en/server-­‐
-options.html#option_mysqld_user
+options.html#option_mysqld_user 
 
 1.3 Disable MySQL Command History (Scored)
 Profile Applicability:   Level 2 -­‐ MySQL RDBMS on Linux
@@ -82,7 +81,7 @@ Description:
 On Linux/UNIX, the MySQL client logs statements executed interactively to a history
 file.  By default, this file is named .mysql_history in the user's home directory. Most
 interactive commands run in the MySQL client application are saved to a history file.  The
-MySQL command history should be disabled. 
+MySQL command history should be disabled.
 Rationale:
 Disabling the MySQL command history reduces the probability of exposing sensitive
 information, such as passwords and encryption keys.
@@ -99,20 +98,20 @@ will need to be placed in the shell's startup script.
 2. Create $HOME/.mysql_history as a symbolic to /dev/null.
 > ln -s /dev/null $HOME/.mysql_history Default Value:
 By default, the MySQL command history file is located in $HOME/.mysql_history.
+
 References:
 1. http://dev.mysql.com/doc/refman/5.7/en/mysql-­‐logging.html
-2. http://bugs.mysql.com/bug.php?id=72158
+2. http://bugs.mysql.com/bug.php?id=72158 
 
-1.4 Verify That the MYSQL_PWD Environment Variables Is Not In Use
-(Scored)
+1.4 Verify that 'MYSQL_PWD' Is Not Set (Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS on Linux
 Description:
 MySQL can read a default database password from an environment variable called
-MYSQL_PWD. 
+MYSQL_PWD. Avoiding use of this environment variable can better safeguard the
+confidentiality of MySQL credentials.
 Rationale:
 The use of the MYSQL_PWD environment variable implies the clear text storage of MySQL
-credentials. Avoiding this may increase assurance that the confidentiality of MySQL
-credentials is preserved.
+credentials.
 Audit:
 To assess this recommendation, use the /proc filesystem to determine if MYSQL_PWD is
 currently set for any process
@@ -126,7 +125,7 @@ Not set.
 References:
 1. http://dev.mysql.com/doc/refman/5.7/en/environment-­‐variables.html
 2. https://blogs.oracle.com/myoraclediary/entry/how_to_check_environment_variabl
-es
+es 
 
 1.5 Disable Interactive Login (Scored)
 Profile Applicability:   Level 2 -­‐ MySQL RDBMS on Linux
@@ -135,7 +134,7 @@ When created, the MySQL user may have interactive access to the operating system
 means that the MySQL user could login to the host as any other user would.
 Rationale:
 Preventing the MySQL user from logging in interactively may reduce the impact of a
-compromised MySQL account.  There is also more accountability as accessing the operating 
+compromised MySQL account.  There is also more accountability as accessing the operating
 system where the MySQL server lies will require the user's own account.  Interactive access
 by the MySQL user is unnecessary and should be disabled.
 Audit:
@@ -148,165 +147,14 @@ usermod -s /bin/false
 usermod -s /sbin/nologin Impact:
 This setting will prevent the MySQL administrator from interactively logging into the
 operating system using the MySQL user.  Instead, the administrator will need to log in using
-one's own account.
+one's own account. 
 
-1.6 Verify That 'MYSQL_PWD' Is Not Set In Users' Profiles (Scored)
-Profile Applicability:   Level 1 -­‐ MySQL RDBMS on Linux
-Description:
-MySQL can read a default database password from an environment variable called
-MYSQL_PWD.
-Rationale:
-The use of the MYSQL_PWD environment variable implies the clear text storage of MySQL
-credentials. Avoiding this may increase assurance that the confidentiality of MySQL
-credentials is preserved.
-
-Audit:
-To assess this recommendation check if MYSQL_PWD is set in login scripts using the
-following command:
-grep MYSQL_PWD /home/*/.{bashrc,profile,bash_profile}
-Remediation:
-Check which users and/or scripts are setting MYSQL_PWD and change them to use a more
-secure method.
-Default Value:
-Not set.
-References:
-1. http://dev.mysql.com/doc/refman/5.7/en/environment-­‐variables.html
-2. https://blogs.oracle.com/myoraclediary/entry/how_to_check_environment_variabl
-es
-2.1 Backup and Disaster Recovery
-This section contains recommendations related to backup and recovery
-
-2.1.1 Backup policy in place (Not Scored)
-Profile Applicability:   Level 1 -­‐ MySQL RDBMS on Linux 
-Description:
-A backup policy should be in place.
-Rationale:
-Backing up MySQL databases, including 'mysql', will help ensure the availability of data in
-the event of an incident.
-Audit:
-Check with "crontab -l" if there is a backup schedule.
-Remediation:
-Create a backup policy and backup schedule.
-Impact:
-Without backups it might be hard to recover from an incident.
-
-2.1.2 Verify backups are good (Not Scored)
-Profile Applicability:   Level 1 -­‐ MySQL RDBMS on Linux
-Description:
-Backups should be validated on a regular basis.
-Rationale:
-Verifying that backups are occurring appropriately will help ensure the availability of data
-in the event of an incident.
-Audit:
-Check reports of backup validation tests.
-Remediation:
-Implement regular backup checks and document each check.
-
-Impact:
-Without a well tested backup it might be hard to recover from an incident if the backup
-procedure contains errors or doesn't include all required data.
-
-2.1.3 Secure backup credentials (Not Scored)
-Profile Applicability:   Level 1 -­‐ MySQL RDBMS on Linux
-Description:
-The password, certificate and any other credentials should be protected.
-Rationale:
-A user with full privileges is needed for backup. The credentials for this user should be
-protected
-Audit:
-Check permissions of files containing passwords and/or ssl keys.
-Remediation:
-Change file permissions
-Impact:
-When the backup credentials are not properly secured then they might be abused to gain
-access to the server. The backup user needs an account with many privileges, so the
-attacker can gain (almost) complete access to the server.
-
-2.1.4 The backups should be properly secured (Not Scored)
-Profile Applicability:   Level 1 -­‐ MySQL RDBMS on Linux
-Description:
-The backup files will contain all data in the databases. Filesystem permissions and/or
-encryption should be used to prevent non authorized users from gaining access to the
-backups. 
-Rationale:
-Backups should be considered sensitive information.
-Audit:
-Check who has access to the backup files. 
-Are the files world-­‐readable (e.g. rw-­‐r-­‐-­‐r-­‐)
-o Are they stored in a world readable directory?
-Is the group MySQL and/or backup specific?
-o If not: the file and directory must not be group readable
-Are the backups stored offsite?
-o Who has access to the backups?
-Are the backups encrypted?
-o Where is the encryption key stored?
-o Does the encryption key consists of  a guessable password?
-Remediation:
-Implement encryption or use filesystem permissions.
-Impact:
-If an unauthorized user can access backups then they have access to all the data that is in
-the database. This is true for unencrypted backups and for encrypted backups if the
-encryption key is stored along with the backup.
-
-2.1.5 Point in time recovery (Not Scored)
-Profile Applicability:   Level 2 -­‐ MySQL RDBMS on Linux
-Description:
-With binlogs it is possible to implement point-­‐in-­‐time recovery. This makes it possible to
-restore the changes between the last full backup and the point-­‐in-­‐time.
-Enabling binlogs is not sufficient, a restore procedure should be created and has to be
-tested.
-Rationale:
-This can reduce the amount of information lost. 
-Audit:
-Check if binlogs are enabled and if there is a restore procedure.
-Remediation:
-Enable binlogs and create and test a restore procedure.
-Impact:
-Without point-­‐in-­‐time recovery the data which was stored between the last backup and the
-time of disaster might not be recoverable.
-
-2.1.6 Disaster recovery plan (Not Scored)
-Profile Applicability:   Level 1 -­‐ MySQL RDBMS on Linux
-Description:
-A disaster recovery plan should be created.
-A slave in a different datacenter can be used or offsite backups. There should be
-information about what time a recovery will take and if the recovery site has the same
-capacity.
-Rationale:
-A disaster recovery should be planned.
-Audit:
-Check if there is a disaster recovery plan
-Remediation:
-Create a disaster recovery plan
-Impact:
-Without a well tested disaster recovery plan it might not be possible to recover in time.
-
-
-
-2.1.7 Backup of configuration and related files (Not Scored)
-Profile Applicability:   Level 1 -­‐ MySQL RDBMS on Linux
-Description:
-The following files should be included in the backup: 
-Configuration files (my.cnf and included files)
-SSL files (certificates, keys)
-User Defined Functions (UDFs)
-Source code for customizations
-Rationale:
-These files are required to be able to fully restore an instance.
-Audit:
-Check if these files are in used and are saved in the backup.
-Remediation:
-Add these files to the backup
-Impact:
-Without a complete backup it might not be possible to fully recover.
-
-2.2 Dedicate Machine Running MySQL (Not Scored)
+2.1 Dedicate Machine Running MySQL (Not Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS on Linux
 Description:
 It is recommended that MySQL Server software be installed on a dedicated server.  This
 architectural consideration affords flexibility in that the database server can be placed on a
 separate zone allowing access only from particular hosts and over particular protocols.
-
 Rationale:
 The attack surface is reduced on a server with only the underlying operating system,
 MySQL server software, and any security or operational tooling that may be additionally
@@ -318,24 +166,23 @@ additional applications or services unrelated to the proper operation of the MyS
 software are installed.
 Remediation:
 Remove excess applications or services and/or remove unnecessary roles from the
-underlying operating system.
+underlying operating system. 
 Impact:
 Care must be taken that applications or services that are required for the proper operation
 of the operating system are not removed.
 Custom applications may need to be modified to accommodate database connections over
 the network rather than on the use (e.g., using TCP/IP connections).
 Additional hardware and operating system licenses may be required to make the
-architectural change.
+architectural change. 
 
-2.3 Do Not Specify Passwords in Command Line (Not Scored)
+2.2 Do Not Specify Passwords in Command Line (Not Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS on Linux
 Description:
-When a command is executed on the command line, for example mysql -u admin –p
-password, the password may be visible in the user's shell/command history or in the
+When a command is executed on the command line, for example mysql -u admin ppassword, the password may be visible in the user's shell/command history or in the
 process list.
 Rationale:
 If the password is visible in the process list or user's shell/command history, an attacker
-will be able to access the MySQL database using the stolen credentials. 
+will be able to access the MySQL database using the stolen credentials.
 Audit:
 Check the process or task list if the password is visible.
 Check the shell or command history if the password is visible.
@@ -351,70 +198,41 @@ Using mysql_config_editor to encrypt the authentication credentials in
 Additionally, not all scripts/applications may be able to use .mylogin.cnf.
 References:
 1. http://dev.mysql.com/doc/refman/5.7/en/mysql-­‐config-­‐editor.html
-2. http://dev.mysql.com/doc/refman/5.7/en/password-­‐security-­‐user.html
+2. http://dev.mysql.com/doc/refman/5.7/en/password-­‐security-­‐user.html 
 
-2.4 Do Not Reuse Usernames (Not Scored)
+2.3 Do Not Reuse User Accounts (Not Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS on Linux
 Description:
 Database user accounts should not be reused for multiple applications or users.
 Rationale:
 Utilizing unique database accounts across applications will reduce the impact of a
 compromised MySQL account.
-
 Audit:
 Each user should be linked to one of these system accounts
 a person
 an application
 Remediation:
-Add/Remove users so that each user is only used for one specific purpose.
-Impact:
-If a user is reused then a compromise of this user will compromise multiple parts of the
-system and/or application.
+Add/Remove users so that each user is only used for one specific purpose. 
 
-2.5 Do Not Use Default or Non-­‐MySQL-­‐specific Cryptographic Keys (Not
-Scored)
+2.4 Do Not Use Default or Shared Cryptographic Material (Not Scored)
 Profile Applicability:   Level 2 -­‐ MySQL RDBMS on Linux
 Description:
-The SSL certificate and key used by MySQL should be used only for MySQL and only for one
-instance.
+The cryptographic material used by MySQL, such as digital certificates and encryption keys,
+should be used only for MySQL and only for one instance. Default cryptographic material
+should not be used because others are likely to have copies of them.
 Rationale:
-Use of default certificates can allow an attacker to impersonate the MySQL server.
+If an attacker gains access to shared cryptographic material, including default material, the
+attacker can reuse that material to impersonate the MySQL server or otherwise
+compromise its operations.
 Audit:
-Check if the certificate is bound to one instance of MySQL.
+Review all cryptographic material and check to see if any of it is default or is used for other
+MySQL instances or for purposes other than MySQL.
 Remediation:
-Generate a new certificate/key per MySQL instance.
-Impact:
-If a the key is used on multiple system then a compromise of one system leads to
-compromise of the network traffic of all servers which use the same key. 
+Generate new certificates, keys, and other cryptographic material as needed for each
+affected MySQL instance. 
 
-2.6 Set a Password Expiry Policy for Specific Users (Not Scored)
-Profile Applicability:   Level 1 -­‐ MySQL RDBMS
-Description:
-Password expiry for specific users provides user passwords with a unique time bounded
-lifetime.
-Rationale:
-Allows additional security factors pertinent to a specific user to provide further password
-security; predetermined by varying security needs and usability requirements in a system
-or organization [1].
-Audit:
-Returns all users currently using the global setting default_password_life, and hence have
-no specific user password expiry set.
-SELECT user, host, password_lifetime from mysql.user from mysql.user where
-password_lifetime IS NULL;
-Remediation:
-Using the user and host information from the audit procedure, set each user a password
-lifetime e.g.
-ALTER USER 'jeffrey'@'localhost' PASSWORD EXPIRE INTERVAL 90 DAY;
-Impact:
-Further password security factors unique to a system or organization’s security policy
-maybe being overlooked.
-Default Value:
-NULL. The user's password_lifetime takes on the value set in global
-default_password_lifetime variable.
-References:
-1. [1] http://csrc.nist.gov/publications/drafts/800-­‐118/draft-­‐sp800-­‐118.pdf(ES-­‐2) 
-
-3.1 Ensure 'datadir' Has Appropriate Permissions (Scored)
+3.1 Ensure 'datadir' Has Appropriate Permissions and Ownership
+(Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS on Linux
 Description:
 The data directory is the location of the MySQL databases.
@@ -435,153 +253,157 @@ Execute the following commands at a terminal prompt:
 chmod 700 <datadir>
 chown mysql:mysql <datadir> 
 
-3.2 Ensure 'log_bin_basename' Files Have Appropriate Permissions
-(Scored)
+3.2 Ensure 'log_bin_basename' Files Have Appropriate Permissions and
+Ownership (Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS on Linux
 Description:
 MySQL can operate using a variety of log files, each used for different purposes.  These are
 the binary log, error log, slow query log, relay log, and general log.  Because these are files
-on the host operating system, they are subject to the permissions structure provided by the
-host and may be accessible by users other than the MySQL user.
+on the host operating system, they are subject to the permissions and ownership structure
+provided by the host and may be accessible by users other than the MySQL user.
 Rationale:
 Limiting the accessibility of these objects will protect the confidentiality, integrity, and
 availability of the MySQL logs.
 Audit:
-Perform the following steps to assess this recommendation: Identify the basename of binary log files (log_bin_basename)by executing the
-following statement
-show variables like 'log_bin_basename'; Verify permissions are 660 for mysql:mysql on each log file of the form
-log_bin_basename.nnnnnn.
+Perform the following steps to assess this recommendation: Execute the following SQL statement to determine the Value of log_bin_basename
+show variables like 'log_bin_basename'; Execute the following command at a terminal prompt to list all log_bin_basename.*
+files
+ls <log_bin_basename>.* For each file listed, execute the following command
+ls -l <log_bin_basename.nnnnn> | egrep "^-[r|w]{2}-[r|w]{2}----\s*.*$"
+Lack of output implies a finding.
 Remediation:
-Execute the following command for each log file location requiring corrected permissions:
-chmod 660 <log file>
-chown mysql:mysql <log file>
-Impact:
-Changing the permissions of the log files might have impact on monitoring tools which use
-a logfile adapter. Also the slow query log can be used for performance analysis by
-application developers. 
-If the permissions on the relay logs and binary log files are accidentally changed to exclude
-the user account which is used to run the MySQL service then this might break replication.
-The binary log file can be used for point in time recovery so this can also affect backup,
-restore and disaster recovery procedures.
-
-3.3 Ensure 'log_error' Has Appropriate Permissions (Scored)
-Profile Applicability:   Level 1 -­‐ MySQL RDBMS on Linux
-Description:
-MySQL can operate using a variety of log files, each used for different purposes.  These are
-the binary log, error log, slow query log, relay log, and general log.  Because these are files
-on the host operating system, they are subject to the permissions structure provided by the
-host and may be accessible by users other than the MySQL user.
-Rationale:
-Limiting the accessibility of these objects will protect the confidentiality, integrity, and
-availability of the MySQL logs.
-Audit:
-Perform the following steps to assess this recommendation: Find the log_error value (<error_log_path>)by executing the following statement
-show global variables like 'log_error'; Verify permissions are 660 for mysql:mysql for <error_log_path>
-Remediation:
-Execute the following command for each log file location requiring corrected permissions:
-chmod 660 <log file>
-chown mysql:mysql <log file>
-Impact:
-Changing the permissions of the log files might have impact on monitoring tools which use
-a logfile adapter. Also the slow query log can be used for performance analysis by
-application developers. 
-If the permissions on the relay logs and binary log files are accidentally changed to exclude
-the user account which is used to run the MySQL service then this might break replication.
-The binary log file can be used for point in time recovery so this can also affect backup,
-restore and disaster recovery procedures.
-
-3.4 Ensure 'slow_query_log' Has Appropriate Permissions (Scored)
-Profile Applicability:   Level 1 -­‐ MySQL RDBMS on Linux
-Description:
-MySQL can operate using a variety of log files, each used for different purposes.  These are
-the binary log, error log, slow query log, relay log, and general log.  Because these are files
-on the host operating system, they are subject to the permissions structure provided by the
-host and may be accessible by users other than the MySQL user.
-Rationale:
-Limiting the accessibility of these objects will protect the confidentiality, integrity, and
-availability of the MySQL logs.
-Audit:
-Perform the following steps to assess this recommendation: Find the slow_query_log value (<slow_query_log_path>)by executing the following
-statement
-show variables like 'slow_query_log_file'; Verify permissions are 660 for mysql:mysql for <slow_query_log_path>
-Remediation:
-Execute the following command for each log file location requiring corrected permissions:
+Execute the following command for each log file location requiring corrected permissions
+and ownership:
 chmod 660 <log file>
 chown mysql:mysql <log file> 
 Impact:
-Changing the permissions of the log files might have impact on monitoring tools which use
-a logfile adapter. Also the slow query log can be used for performance analysis by
-application developers.
-If the permissions on the relay logs and binary log files are accidentally changed to exclude
-the user account which is used to run the MySQL service then this might break replication.
+Changing the permissions and ownership of the log files might impact monitoring tools
+which use a logfile adapter.
+If the permissions on the binary log files are accidentally changed to exclude the user
+account which is used to run the MySQL service, then this might break replication.
 The binary log file can be used for point in time recovery so this can also affect backup,
-restore and disaster recovery procedures.
+restore and disaster recovery procedures. 
 
-3.5 Ensure 'relay_log_basename' Files Have Appropriate Permissions
+3.3 Ensure 'log_error' Has Appropriate Permissions and Ownership
 (Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS on Linux
 Description:
 MySQL can operate using a variety of log files, each used for different purposes.  These are
-the binary log, error log, slow query log, relay log, and general log.  Because these are files
-on the host operating system, they are subject to the permissions structure provided by the
-host and may be accessible by users other than the MySQL user.
+the binary log, error log, slow query log, relay log, audit log and general log.  Because these
+are files on the host operating system, they are subject to the permissions and ownership
+structure provided by the host and may be accessible by users other than the MySQL user.
 Rationale:
 Limiting the accessibility of these objects will protect the confidentiality, integrity, and
 availability of the MySQL logs.
 Audit:
-Perform the following steps to assess this recommendation:
-Find the relay_log_basename value by executing the following statement
-show variables like 'relay_log_basename'; Verify permissions are 660 for mysql:mysql for each file of the
-form <relay_log_basename>
+Perform the following steps to assess this recommendation: Execute the following SQL statement to determine the Value of log_error
+show variables like 'log_error'; Execute the following command at a terminal prompt to list all log_error.* files
+ls <log_error>.* For each file listed, execute the following command
+ls -l <log_error> | egrep "^-[r|w]{2}-[r|w]{2}----\s*.*$"
+Lack of output implies a finding.
 Remediation:
-Execute the following command for each log file location requiring corrected permissions: 
+Execute the following command for each log file location requiring corrected permissions
+and ownership:
 chmod 660 <log file>
 chown mysql:mysql <log file>
-Impact:
-Changing the permissions of the log files might have impact on monitoring tools which use
-a logfile adapter. Also the slow query log can be used for performance analysis by
-application developers.
-If the permissions on the relay logs and binary log files are accidentally changed to exclude
-the user account which is used to run the MySQL service then this might break replication.
-The binary log file can be used for point in time recovery so this can also affect backup,
-restore and disaster recovery procedures.
+Impact: 
+Changing the permissions of the log files might impact monitoring tools which use a logfile
+adapter. 
 
-3.6 Ensure 'general_log_file' Has Appropriate Permissions (Scored)
+3.4 Ensure 'slow_query_log' Has Appropriate Permissions and
+Ownership (Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS on Linux
 Description:
 MySQL can operate using a variety of log files, each used for different purposes.  These are
-the binary log, error log, slow query log, relay log, and general log.  Because these are files
-on the host operating system, they are subject to the permissions structure provided by the
-host and may be accessible by users other than the MySQL user.
+the binary log, error log, slow query log, relay log, audit log and general log.  Because these
+are files on the host operating system, they are subject to the permissions and ownership
+structure provided by the host and may be accessible by users other than the MySQL user.
 Rationale:
 Limiting the accessibility of these objects will protect the confidentiality, integrity, and
 availability of the MySQL logs.
 Audit:
-Perform the following steps to assess this recommendation: Find the general_log_file value by executing the following statement
-show variables like 'general_log_file'; Verify permissions are 660 for mysql:mysql for the indicated general_log_file.
+Perform the following steps to assess this recommendation: Execute the following SQL statement to determine the Value of slow_query_log_file
+show variables like 'slow_query_log_file'; Execute the following command at a terminal prompt to list all slow_query_log_file.*
+files
+ls <slow_query_log_file>.* For each file listed, execute the following command
+ls -l <slow_query_log_file> | egrep "^-[r|w]{2}-[r|w]{2}----\s*.*$"
+Lack of output implies a finding.
 Remediation:
-Execute the following command for each log file location requiring corrected permissions: 
+Execute the following command for each log file location requiring corrected permissions:
 chmod 660 <log file>
 chown mysql:mysql <log file>
-Impact:
-Changing the permissions of the log files might have impact on monitoring tools which use
-a logfile adapter. Also the slow query log can be used for performance analysis by
-application developers.
-If the permissions on the relay logs and binary log files are accidentally changed to exclude
-the user account which is used to run the MySQL service then this might break replication.
-The binary log file can be used for point in time recovery so this can also affect backup,
-restore and disaster recovery procedures.
+Impact: 
+Changing the permissions of the log files might impact monitoring tools which use a logfile
+adapter. Also the slow query log can be used for performance analysis by application
+developers. 
 
-3.7 Ensure SSL Key Files Have Appropriate Permissions (Scored)
+3.5 Ensure 'relay_log_basename' Files Have Appropriate Permissions
+and Ownership (Scored)
+Profile Applicability:   Level 1 -­‐ MySQL RDBMS on Linux
+Description:
+MySQL can operate using a variety of log files, each used for different purposes.  These are
+the binary log, error log, slow query log, relay log, audit log and general log.  Because these
+are files on the host operating system, they are subject to the permissions and ownership
+structure provided by the host and may be accessible by users other than the MySQL user.
+Rationale:
+Limiting the accessibility of these objects will protect the confidentiality, integrity, and
+availability of the MySQL logs.
+Audit:
+Perform the following steps to assess this recommendation: Execute the following SQL statement to determine the Value of relay_log_basename
+show variables like 'relay_log_basename'; Execute the following command at a terminal prompt to list all relay_log_basename.*
+files
+ls <relay_log_basename>.* For each file listed, execute the following command
+ls -l <relay_log_basename> | egrep "^-[r|w]{2}-[r|w]{2}----\s*.*$"
+Lack of output implies a finding.
+Remediation:
+Execute the following command for each log file location requiring corrected permissions
+and ownership:
+chmod 660 <log file>
+chown mysql:mysql <log file> 
+Impact:
+Changing the permissions of the log files might impact monitoring tools which use a logfile
+adapter.
+If the permissions on the relay logs are accidentally changed to exclude the user account
+which is used to run the MySQL service then this might break replication. 
+
+3.6 Ensure 'general_log_file' Has Appropriate Permissions and
+Ownership (Scored)
+Profile Applicability:   Level 1 -­‐ MySQL RDBMS on Linux
+Description:
+MySQL can operate using a variety of log files, each used for different purposes.  These are
+the binary log, error log, slow query log, relay log, audit log and general log.  Because these
+are files on the host operating system, they are subject to the permissions and ownership
+structure provided by the host and may be accessible by users other than the MySQL user.
+Rationale:
+Limiting the accessibility of these objects will protect the confidentiality, integrity, and
+availability of the MySQL logs.
+Audit:
+Perform the following steps to assess this recommendation: Execute the following SQL statement to determine the Value of general_log_file
+show variables like 'general_log_file'; Execute the following command at a terminal prompt to list all general_log_file.*
+files
+ls <general_log_file>.* For each file listed, execute the following command
+ls -l <general_log_file> | egrep "^-[r|w]{2}-[r|w]{2}----\s*.*$"
+Lack of output implies a finding.
+Remediation:
+Execute the following command for each log file location requiring corrected permissions
+and ownership:
+chmod 660 <log file>
+chown mysql:mysql <log file> 
+Impact:
+Changing the permissions of the log files might impact monitoring tools which use a logfile
+adapter. 
+
+3.7 Ensure SSL Key Files Have Appropriate Permissions and Ownership
+(Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS on Linux
 Description:
 When configured to use SSL/TLS, MySQL relies on key files, which are stored on the host's
-filesystem.  These key files are subject to the host's permissions structure.
+filesystem.  These key files are subject to the host's permissions and ownership structure.
 Rationale:
 Limiting the accessibility of these objects will protect the confidentiality, integrity, and
 availability of the MySQL database and the communication with the client.
 If the contents of the SSL key file is known to an attacker he or she might impersonate the
-server. This can be used for a man-­‐in-­‐the-­‐middle attack.
+server. This can be used for a man-­‐in-­‐the-­‐midddle attack.
 Depending on the SSL ciphersuite the key might also be used to decipher previously
 captured network traffic.
 Audit:
@@ -589,23 +411,24 @@ To assess this recommendation, locate the SSL key in use by executing the follow
 statement to get the Value of ssl_key:
 show variables where variable_name = 'ssl_key';
 Then, execute the following command to assess the permissions of the Value:
-ls -l <ssl_key Value> | egrep "^-r--------[ \t]*.[ \t]*mysql[ \t]*mysql.*$" 
+ls -l <ssl_key Value> | egrep "^-r--------[ \t]*.[ \t]*mysql[ \t]*mysql.*$"
 Lack of output from the above command implies a finding.
 Remediation:
-Execute the following commands at a terminal prompt to remediate this setting using the
-Value from the audit procedure:
+Execute the following commands at a terminal prompt to remediate these settings using
+the Value from the audit procedure:
 chown mysql:mysql <ssl_key Value>
 chmod 400 <ssl_key Value>
 Impact:
-If the permissions for the key file are changed incorrectly this can cause SSL to be disabled
-when MySQL is restarted or can cause MySQL not to start at all.
-If other applications are using the same keypair then changing the permissions of the key
-file will affect this application. If this is the case then a new keypair must be generated for
-MySQL.
+If the permissions or ownership for the key file are changed incorrectly this can cause SSL
+to be disabled when MySQL is restarted or can cause MySQL not to start at all. 
+If other applications are using the same keypair then changing the permissions or
+ownership of the key file will affect this application. If this is the case then a new keypair
+must be generated for MySQL.
 References:
-1. http://dev.mysql.com/doc/refman/5.7/en/ssl-­‐connections.html
+1. http://dev.mysql.com/doc/refman/5.7/en/ssl-­‐connections.html 
 
-3.8 Ensure Plugin Directory Has Appropriate Permissions (Scored)
+3.8 Ensure Plugin Directory Has Appropriate Permissions and Ownership
+(Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS on Linux
 Description:
 The plugin directory is the location of the MySQL plugins. Plugins are storage engines or
@@ -617,23 +440,54 @@ might be loaded when the server starts and the code will get executed.
 Audit:
 To assess this recommendation, execute the following SQL statement to discover the Value
 of plugin_dir:
-show variables where variable_name = 'plugin_dir'; 
+show variables where variable_name = 'plugin_dir';
 Then, execute the following command at a terminal prompt (using the discovered
-plugin_dir Value) to determine the permissions.
+plugin_dir Value) to determine the permissions and ownership.
 ls -l <plugin_dir Value>/.. | egrep "^drwxr[-w]xr[-w]x[ \t]*[0-9][ \t]*mysql[
 \t]*mysql.*plugin.*$"
 Lack of output implies a finding.
 NOTE: Permissions are intended to be either 775 or 755.
 Remediation:
-To remediate this setting, execute the following commands at a terminal prompt using the
-plugin_dir Value from the audit procedure.
+To remediate these settings, execute the following commands at a terminal prompt using
+the plugin_dir Value from the audit procedure.
 chmod 775 <plugin_dir Value> (or use 755)
 chown mysql:mysql <plugin_dir Value>
 Impact:
 Users other than the mysql user will no longer be able to update and add/remove plugins
-unless they're able to switch to the mysql user;
+unless they're able to switch to the mysql user; 
 References:
-1. http://dev.mysql.com/doc/refman/5.7/en/install-­‐plugin.html
+1. http://dev.mysql.com/doc/refman/5.7/en/install-­‐plugin.html 
+
+3.9 Ensure 'audit_log_file' has Appropriate Permissions and Ownership
+(Scored)
+Profile Applicability:   Level 1 -­‐ MySQL RDBMS on Linux
+Description:
+MySQL can operate using a variety of log files, each used for different purposes. These are
+the binary log, error log, slow query log, relay log, audit log and general log. Because these
+are files on the host operating system, they are subject to the permissions and ownership
+structure provided by the host and may be accessible by users other than the MySQL user.
+Rationale:
+Limiting the accessibility of these objects will protect the confidentiality, integrity, and
+availability of the MySQL logs.
+Audit:
+To assess this recommendation, execute the following SQL statement to discover the
+audit_log_file value:
+show global variables where variable_name='audit_log_file'; NOTE: If you see the audit file name but no path, the default path will be the path assigned
+to the datadir variable.
+Then, execute the following command at a terminal prompt (using the discovered
+audit_log_file value):
+ls -l <audit_log_file> | egrep "^-rw[-x]rw[-x][-r][-w][-x][ \t]*[0-9][ \t]*mysql[
+\t]*mysql.*$"
+Remediation:
+Execute the following commands for the audit_log_file discovered in the audit
+procedure:
+chmod 660 <audit_log_file>
+chown mysql:mysql <audit_log_file> 
+Impact:
+Changing the permissions and ownership of the audit log file may have impact on who can
+access and edit the the audit log. Such changes can affect monitoring tools which maybe
+using a logfile adapter or scripted alternatives. Also the audit log may be used by alerting
+by infrastructure teams which can affect real-­‐time audit capability. 
 
 4.1 Ensure Latest Security Patches Are Applied (Not Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS on Linux
@@ -643,7 +497,7 @@ and provide new features. It is recommended that MySQL installations are up to d
 the latest security updates.
 Rationale:
 Maintaining currency with MySQL patches will help reduce risk associated with known
-vulnerabilities present in the MySQL server. 
+vulnerabilities present in the MySQL server.
 Without the latest security patches MySQL might have known vulnerabilities which might
 be used by an attacker to gain access.
 Audit:
@@ -654,13 +508,14 @@ Remediation:
 Install the latest patches for your version or upgrade to the latest version.
 Impact:
 To update the MySQL server a restart is required.
+
 References:
 1. http://www.oracle.com/technetwork/topics/security/alerts-­‐086861.html
-2. http://dev.mysql.com/doc/relnotes/mysql/5.6/en/
+2. http://dev.mysql.com/doc/relnotes/mysql/5.7/en/
 3. http://web.nvd.nist.gov/view/vuln/search-­‐
 results?adv_search=true&cves=on&cpe_vendor=cpe%3a%2f%3aoracle&cpe_produ
 ct=cpe%3a%2f%3aoracle%3amysql&cpe_version=cpe%3a%2f%3aoracle%3amysq
-l%3a5.6.0
+l%3a5.7.0 
 
 4.2 Ensure the 'test' Database Is Not Installed (Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS
@@ -669,7 +524,7 @@ The default MySQL installation comes with an unused database called test. It is
 recommended that the test database be dropped.
 Rationale:
 The test database can be accessed by all users and can be used to consume system
-resources.  Dropping the test database will reduce the attack surface of the MySQL server. 
+resources.  Dropping the test database will reduce the attack surface of the MySQL server.
 Audit:
 Execute the following SQL statement to determine if the test database is present:
 SHOW DATABASES LIKE 'test';
@@ -680,7 +535,7 @@ DROP DATABASE "test";
 Note: mysql_secure_installation performs this operation as well as other security-­‐
 related activities.
 References:
-1. http://dev.mysql.com/doc/refman/5.7/en/mysql-­‐secure-­‐installation.html
+1. http://dev.mysql.com/doc/refman/5.7/en/mysql-­‐secure-­‐installation.html 
 
 4.3 Ensure 'allow-­‐suspicious-­‐udfs' Is Set to 'FALSE' (Scored)
 Profile Applicability:   Level 2 -­‐ MySQL RDBMS
@@ -696,7 +551,6 @@ Perform the following to determine if the recommended state is in place:
 Ensure --allow-suspicious-udfs is not specified in the the mysqld start
 up command line.
 Ensure allow-suspicious-udfs is set to FALSE in the MySQL configuration.
-
 Remediation:
 Perform the following to establish the recommended state:
 Remove --allow-suspicious-udfs from the mysqld start up command line.
@@ -706,7 +560,7 @@ FALSE
 References:
 1. http://dev.mysql.com/doc/refman/5.7/en/udf-­‐security.html
 2. http://dev.mysql.com/doc/refman/5.7/en/server-­‐
-options.html#option_mysqld_allow-­‐suspicious-­‐udfs
+options.html#option_mysqld_allow-­‐suspicious-­‐udfs 
 
 4.4 Ensure 'local_infile' Is Disabled (Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS
@@ -722,15 +576,13 @@ SHOW VARIABLES WHERE Variable_name = 'local_infile';
 Remediation:
 Add the following line to the [mysqld] section of the MySQL configuration file and restart
 the MySQL service:
-local-infile=0
-
-Impact:
+local-infile=0 Impact:
 Disabling local_infile will impact the functionality of solutions that rely on it.
 Default Value:
 ON
 References:
 1. http://dev.mysql.com/doc/refman/5.7/en/string-­‐functions.html#function_load-­‐file
-2. http://dev.mysql.com/doc/refman/5.7/en/load-­‐data.html
+2. http://dev.mysql.com/doc/refman/5.7/en/load-­‐data.html 
 
 4.5 Ensure 'mysqld' Is Not Started with '-­‐-­‐skip-­‐grant-­‐tables' (Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS
@@ -745,10 +597,10 @@ Open the MySQL configuration (e.g. my.cnf) file and search for skip-­‐grant-�
 Ensure skip-grant-tables is set to FALSE
 Remediation:
 Perform the following to establish the recommended state: Open the MySQL configuration (e.g. my.cnf) file and set:
-skip-grant-tables = FALSE 
+skip-grant-tables = FALSE
 References:
 1. http://dev.mysql.com/doc/refman/5.7/en/server-­‐
-options.html#option_mysqld_skip-­‐grant-­‐tables
+options.html#option_mysqld_skip-­‐grant-­‐tables 
 
 4.6 Ensure '-­‐-­‐skip-­‐symbolic-­‐links' Is Enabled (Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS
@@ -772,9 +624,9 @@ Set the skip_symbolic_links to YES
 NOTE: If skip_symbolic_links does not exist, add it to the configuration file in the mysqld
 section.
 References:
-1. http://dev.mysql.com/doc/refman/5.7/en/symbolic-­‐links.html 
+1. http://dev.mysql.com/doc/refman/5.7/en/symbolic-­‐links.html
 2. http://dev.mysql.com/doc/refman/5.7/en/server-­‐
-options.html#option_mysqld_symbolic-­‐links
+options.html#option_mysqld_symbolic-­‐links 
 
 4.7 Ensure the 'daemon_memcached' Plugin Is Disabled (Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS
@@ -796,9 +648,7 @@ This uninstalls the memcached plugin from the MySQL server.
 Default Value:
 disabled
 References:
-1. http://dev.mysql.com/doc/refman/5.7/en/innodb-­‐memcached-­‐security.html
-
-
+1. http://dev.mysql.com/doc/refman/5.7/en/innodb-­‐memcached-­‐security.html 
 
 4.8 Ensure 'secure_file_priv' Is Not Empty (Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS
@@ -825,7 +675,7 @@ No value set.
 
 References:
 1. http://dev.mysql.com/doc/refman/5.7/en/server-­‐system-­‐
-variables.html#sysvar_secure_file_priv
+variables.html#sysvar_secure_file_priv 
 
 4.9 Ensure 'sql_mode' Contains 'STRICT_ALL_TABLES' (Scored)
 Profile Applicability:   Level 2 -­‐ MySQL RDBMS
@@ -849,9 +699,8 @@ Perform the following actions to remediate this setting:
 Impact:
 Applications relying on the MySQL database should be aware that STRICT_ALL_TABLES is in
 use, such that error conditions are handled appropriately.
-
 References:
-1. http://dev.mysql.com/doc/refman/5.7/en/sql-­‐mode.html
+1. http://dev.mysql.com/doc/refman/5.7/en/server-­‐sql-­‐mode.html 
 
 5.1 Ensure Only Administrative Users Have Full Database Access (Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS
@@ -882,9 +731,9 @@ WHERE db = 'mysql'
 AND ((Select_priv = 'Y')
 OR (Insert_priv = 'Y')
 OR (Update_priv = 'Y')
-OR (Delete_priv = 'Y') 
+OR (Delete_priv = 'Y')
 OR (Create_priv = 'Y')
-OR (Drop_priv = 'Y')); Ensure all users returned are administrative users.
+OR (Drop_priv = 'Y')); Ensure all users returned are administrative users. 
 Remediation:
 Perform the following actions to remediate this setting:
 1. Enumerate non-­‐administrative users resulting from the audit procedure
@@ -892,7 +741,7 @@ Perform the following actions to remediate this setting:
 appropriate
 Impact:
 Consideration should be made for which privileges are required by each user requiring
-interactive database access.
+interactive database access. 
 
 5.2 Ensure 'file_priv' Is Not Set to 'Y' for Non-­‐Administrative Users
 (Scored)
@@ -909,7 +758,7 @@ The File_priv right allows mysql users to read files from disk and to write file
 This may be leveraged by an attacker to further compromise MySQL.  It should be noted
 that the MySQL server should not overwrite existing files.
 Audit:
-Execute the following SQL statement to audit this setting 
+Execute the following SQL statement to audit this setting
 select user, host from mysql.user where File_priv = 'Y';
 Ensure only administrative users are returned in the result set.
 Remediation:
@@ -920,7 +769,7 @@ procedure
 administrative user:
 REVOKE FILE ON *.* FROM '<user>';
 References:
-1. http://dev.mysql.com/doc/refman/5.7/en/privileges-­‐provided.html#priv_file
+1. http://dev.mysql.com/doc/refman/5.7/en/privileges-­‐provided.html#priv_file 
 
 5.3 Ensure 'process_priv' Is Not Set to 'Y' for Non-­‐Administrative Users
 (Scored)
@@ -936,7 +785,6 @@ Audit:
 Execute the following SQL statement to audit this setting:
 select user, host from mysql.user where Process_priv = 'Y';
 Ensure only administrative users are returned in the result set.
-
 Remediation:
 Perform the following steps to remediate this setting:
 1. Enumerate the non-­‐administrative users found in the result set of the audit
@@ -947,7 +795,7 @@ REVOKE PROCESS ON *.* FROM '<user>';
 Impact:
 Users denied the PROCESS privilege may also be denied use of SHOW ENGINE.
 References:
-1. http://dev.mysql.com/doc/refman/5.7/en/privileges-­‐provided.html#priv_process
+1. http://dev.mysql.com/doc/refman/5.7/en/privileges-­‐provided.html#priv_process 
 
 5.4 Ensure 'super_priv' Is Not Set to 'Y' for Non-­‐Administrative Users
 (Scored)
@@ -964,7 +812,7 @@ enable/disable logging, alter data, disable/enable features.  Limiting the accou
 the SUPER privilege reduces the chances that an attacker can exploit these capabilities.
 Audit:
 Execute the following SQL statement to audit this setting:
-select user, host from mysql.user where Super_priv = 'Y'; 
+select user, host from mysql.user where Super_priv = 'Y';
 Ensure only administrative users are returned in the result set.
 Remediation:
 Perform the following steps to remediate this setting:
@@ -975,9 +823,9 @@ administrative user:
 REVOKE SUPER ON *.* FROM '<user>';
 Impact:
 When the SUPER privilege is denied to a given user, that user will be unable to take
-advantage of certain capabilities, such as certain mysqladmin options.
+advantage of certain capabilities, such as certain mysqladmin options. 
 References:
-1. http://dev.mysql.com/doc/refman/5.7/en/privileges-­‐provided.html#priv_super
+1. http://dev.mysql.com/doc/refman/5.7/en/privileges-­‐provided.html#priv_super 
 
 5.5 Ensure 'shutdown_priv' Is Not Set to 'Y' for Non-­‐Administrative Users
 (Scored)
@@ -991,7 +839,7 @@ The SHUTDOWN privilege allows principals to shutdown MySQL. This may be leverage
 attacker to negatively impact the availability of MySQL.
 Audit:
 Execute the following SQL statement to audit this setting:
-SELECT user, host FROM mysql.user WHERE Shutdown_priv = 'Y'; 
+SELECT user, host FROM mysql.user WHERE Shutdown_priv = 'Y';
 Ensure only administrative users are returned in the result set.
 Remediation:
 Perform the following steps to remediate this setting:
@@ -1002,7 +850,7 @@ administrative user):
 REVOKE SHUTDOWN ON *.* FROM '<user>';
 References:
 1. http://dev.mysql.com/doc/refman/5.7/en/privileges-­‐
-provided.html#priv_shutdown
+provided.html#priv_shutdown 
 
 5.6 Ensure 'create_user_priv' Is Not Set to 'Y' for Non-­‐Administrative
 Users (Scored)
@@ -1018,7 +866,6 @@ Audit:
 Execute the following SQL statement to audit this setting:
 SELECT user, host FROM mysql.user WHERE Create_user_priv = 'Y';
 Ensure only administrative users are returned in the result set.
-
 Remediation:
 Perform the following steps to remediate this setting:
 1. Enumerate the non-­‐administrative users found in the result set of the audit
@@ -1029,7 +876,7 @@ REVOKE CREATE USER ON *.* FROM '<user>';
 Impact:
 Users that are denied the CREATE USER privilege will not only be unable to create a user,
 but they may be unable to drop a user, rename a user, or otherwise revoke a given user's
-privileges.
+privileges. 
 
 5.7 Ensure 'grant_priv' Is Not Set to 'Y' for Non-­‐Administrative Users
 (Scored)
@@ -1046,7 +893,6 @@ Execute the following SQL statements to audit this setting:
 SELECT user, host FROM mysql.user WHERE Grant_priv = 'Y';
 SELECT user, host FROM mysql.db WHERE Grant_priv = 'Y';
 Ensure only administrative users are returned in the result set.
-
 Remediation:
 Perform the following steps to remediate this setting:
 1. Enumerate the non-­‐administrative users found in the result sets of the audit
@@ -1056,7 +902,7 @@ administrative user:
 REVOKE GRANT OPTION ON *.* FROM <user>;
 References:
 1. http://dev.mysql.com/doc/refman/5.7/en/privileges-­‐provided.html#priv_grant-­‐
-option
+option 
 
 5.8 Ensure 'repl_slave_priv' Is Not Set to 'Y' for Non-­‐Slave Users (Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS
@@ -1073,14 +919,14 @@ SELECT user, host FROM mysql.user WHERE Repl_slave_priv = 'Y';
 Ensure only accounts designated for slave users are granted this privilege.
 Remediation:
 Perform the following steps to remediate this setting:
-1. Enumerate the non-­‐slave users found in the result set of the audit procedure 
+1. Enumerate the non-­‐slave users found in the result set of the audit procedure
 2. For each user, issue the following SQL statement (replace "<user>" with the non-­‐
 slave user):
 REVOKE REPLICATION SLAVE ON *.* FROM <user>; Use the REVOKE statement to remove the SUPER privilege from users who shouldn't have
 it.
 References:
 1. http://dev.mysql.com/doc/refman/5.7/en/privileges-­‐
-provided.html#priv_replication-­‐slave
+provided.html#priv_replication-­‐slave 
 
 5.9 Ensure DML/DDL Grants Are Limited to Specific Databases and Users
 (Scored)
@@ -1104,7 +950,7 @@ OR Delete_priv='Y'
 OR Create_priv='Y'
 OR Drop_priv='Y'
 OR Alter_priv='Y';
-Ensure all users returned should have these privileges on the indicated databases. 
+Ensure all users returned should have these privileges on the indicated databases.
 NOTE: Global grants are covered in Recommendation 4.1.
 Remediation:
 Perform the following steps to remediate this setting:
@@ -1112,21 +958,22 @@ Perform the following steps to remediate this setting:
 the audit procedure
 2. For each user, issue the following SQL statement (replace "<user>" with the
 unauthorized user, "<host>" with host name, and "<database>" with the database
-name):
+name): 
 REVOKE
 REVOKE
 REVOKE
 REVOKE
 REVOKE
 REVOKE
-REVOKE
-SELECT ON <host>.<database> FROM <user>;
+REVOKE SELECT ON <host>.<database> FROM <user>;
 INSERT ON <host>.<database> FROM <user>;
 UPDATE ON <host>.<database> FROM <user>;
 DELETE ON <host>.<database> FROM <user>;
 CREATE ON <host>.<database> FROM <user>;
 DROP ON <host>.<database> FROM <user>;
 ALTER ON <host>.<database> FROM <user>;
+
+
 
 6.1 Ensure 'log_error' Is Not Empty (Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS
@@ -1140,14 +987,14 @@ and other critical messages, such as if the error log is not enabled then connec
 might go unnoticed.
 Audit:
 Execute the following SQL statement to audit this setting:
-SHOW variables LIKE 'log_error'; 
+SHOW variables LIKE 'log_error';
 Ensure the Value returned is not empty.
 Remediation:
 Perform the following actions to remediate this setting:
 1. Open the MySQL configuration file (my.cnf or my.ini)
 2. Set the log-error option to the path for the error log
 References:
-1. http://dev.mysql.com/doc/refman/5.7/en/error-­‐log.html
+1. http://dev.mysql.com/doc/refman/5.7/en/error-­‐log.html 
 
 6.2 Ensure Log Files Are Stored on a Non-­‐System Partition (Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS on Linux
@@ -1166,74 +1013,37 @@ Remediation:
 Perform the following actions to remediate this setting:
 1. Open the MySQL configuration file (my.cnf)
 2. Locate the log-bin entry and set it to a file not on root ('/'), /var, or /usr
-
 References:
 1. http://dev.mysql.com/doc/refman/5.7/en/binary-­‐log.html
-2. http://dev.mysql.com/doc/refman/5.7/en/replication-­‐options-­‐binary-­‐log.html
+2. http://dev.mysql.com/doc/refman/5.7/en/replication-­‐options-­‐binary-­‐log.html 
 
-6.3 Ensure 'log_error_verbosity' Is Not Set to '1' (Scored)
+6.3 Ensure 'log_warnings' Is Set to '2' (Scored)
 Profile Applicability:   Level 2 -­‐ MySQL RDBMS
 Description:
-The log_error_verbosity system variable provides additional information to the MySQL
-log.  A value of 1 enables logging of error messages. A value of 2 enables logging of error
-and warning messages, and a value of 3 enables logging of error, warning and note
-messages.
+The log_warnings system variable, enabled by default, provides additional information to
+the MySQL log.  A value of 1 enables logging of warning messages, and higher integer values
+tend to enable more logging.
+NOTE: log_warnings has been deprecated as of MySQL 5.7.2. Setting log_warnings will
+also cause log_error_verbosity to be set.The variable scope for log_warnings is global.
 Rationale:
 This might help to detect malicious behavior by logging communication errors and aborted
 connections.
 Audit:
 Execute the following SQL statement to assess this recommendation:
-SHOW GLOBAL VARIABLES LIKE 'log_error_verbosity';
-Ensure the Value returned equals 2 or 3.
+SHOW GLOBAL VARIABLES LIKE 'log_warnings';
+Ensure the Value returned equals 2.
 Remediation:
 Perform the following actions to remediate this setting:
 Open the MySQL configuration file (my.cnf)
 Ensure the following line is found in the mysqld section
-log_error_verbosity = 2
-The value can be 2 or 3.
+log-warnings = 2
 Default Value:
-The option is error+warning (2) by default.
-
+The option is enabled (1) by default.
 References:
-1. https://dev.mysql.com/doc/refman/5.7/en/server-­‐system-­‐
-variables.html#sysvar_log_error_verbosity
+1. http://dev.mysql.com/doc/refman/5.7/en/server-­‐
+options.html#option_mysqld_log-­‐warnings 
 
-6.4 Ensure Audit Logging Is Enabled (Not Scored)
-Profile Applicability:   Level 2 -­‐ MySQL RDBMS
-Description:
-Audit logging is not really included in the Community Edition of MySQL -­‐ only the general
-log.  Using the general log is possible, but not practical, because it grows quickly and has an
-adverse impact on server performance.
-Nevertheless, enabling audit logging is an important consideration for a production
-environment, and third-­‐party tools do exist to help with this. Enable audit logging for
-Interactive user sessions
-Application sessions (optional)
-Rationale:
-Audit logging helps to identify who changed what and when. The audit log might be used as
-evidence in investigations. It might also help to identify what an attacker was able to
-accomplish.
-Audit:
-Verify that a third-­‐party tool is installed and configured to enable logging for interactive
-user sessions and (optionally) applications sessions.
-Remediation:
-Acquire a third-­‐party MySQL logging solution as available from a variety of sources
-including, but not necessarily limited to, the following: 
-The General Query Log
-MySQL Enterprise Audit
-MariaDB Audit Plugin for MySQL
-McAfee MySQL Audit
-
-References:
-1.
-2.
-3.
-4.
-http://dev.mysql.com/doc/refman/5.7/en/query-­‐log.html
-http://dev.mysql.com/doc/refman/5.7/en/mysql-­‐enterprise-­‐audit.html
-https://mariadb.com/kb/en/server_audit-­‐mariadb-­‐audit-­‐plugin/
-https://github.com/mcafee/mysql-­‐audit
-
-6.5 Ensure 'log-­‐raw' Is Set to 'OFF' (Scored)
+6.4 Ensure 'log-­‐raw' Is Set to 'OFF' (Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS
 Description:
 The log-­‐raw MySQL option determines whether passwords are rewritten by the server so
@@ -1252,13 +1062,274 @@ Open the MySQL configuration file (my.cnf)
 Find the log-raw entry and set it as follows
 log-raw = OFF
 Default Value:
-OFF 
+OFF
 References:
 1. http://dev.mysql.com/doc/refman/5.7/en/password-­‐logging.html
 2. http://dev.mysql.com/doc/refman/5.7/en/server-­‐
-options.html#option_mysqld_log-­‐raw
+options.html#option_mysqld_log-­‐raw 
 
-7.1 Ensure Passwords Are Not Stored in the Global Configuration
+6.5 Ensure audit_log_connection_policy is not set to 'NONE' (Scored)
+Profile Applicability:   Level 1 -­‐ MySQL RDBMS
+Description:
+The audit_log_connection_policy variable controls how the audit plugin writes
+connection events to the audit log file.
+Rationale:
+The audit_log_connection_policy offers three options: NONE, ERRORS, and ALL. Each
+option determines whether connection events are logged and the type of connection events
+that are logged. Setting a non 'NONE' value for audit_log_connection_policy ensures at a
+minimum, failed connection events are being logged.  The ERRORS setting will log failed
+connection events and the ALL setting will log all connection events. For MySQL versions =>
+5.6.20, the audit_log_policy variable can override the audit_log_connection_policy,
+potentially invalidating this benchmark recommendation, therefore enforcing a setting for
+audit_log_connection_policy ensures the integrity of this recommendation.
+Audit:
+To assess this recommendation, execute the following SQL statement:
+show variables like '%audit_log_connection_policy%'; Ensure the value is set to either ERRORS or ALL.
+Remediation:
+To remediate this configuration setting, execute one of the following SQL statements:
+set global audit_log_connection_policy = ERRORS
+Or
+set global audit_log_connection_policy = ALL To ensure this remediation remains indefinite for the life of the MySQL Server, set
+audit_log_connection_policy in the server's assigned MySQL configuration file (usually
+named my.cnf, but not always).
+
+Impact:
+If audit_log_connection_policy is set to NONE, the MySQL server will not log failed
+connections, successful connections or any other connection related events.
+Default Value:
+The default value for audit_log_connection_policy is ALL.
+References:
+1. https://dev.mysql.com/doc/refman/5.7/en/audit-­‐log-­‐plugin-­‐options-­‐
+variables.html#sysvar_audit_log_connection_policy
+2. https://dev.mysql.com/doc/refman/5.7/en/audit-­‐log-­‐plugin-­‐logging-­‐control.html 
+
+6.6 Ensure audit_log_exclude_accounts is set to NULL (Scored)
+Profile Applicability:   Level 1 -­‐ MySQL RDBMS
+Description:
+The audit_log_exclude_accounts variable enables the administrator to set accounts for
+which events will not be logged in the audit log.
+Rationale:
+The audit_log_exclude_accounts variable has two permitted values, either NULL or a list
+of MySQL accounts. Setting this variable correctly ensures no single user is able to
+unintentionally evade being logged. Particular attention should be made to privileged
+accounts, as such accounts will generally be bestowed with more privileges than normal
+users, and should not be listed against this variable.
+Audit:
+To assess this recommendation, execute the following SQL statement:
+SHOW VARIABLES LIKE '%audit_log_exclude_accounts%';
+Ensure the resulting audit_log_exclude_accounts value is NULL.
+Remediation:
+To remediate this configuration setting, execute the following SQL statement
+SET GLOBAL audit_log_exclude_accounts = NULL Or set audit_log_exclude_accounts=NULL in my.cnf.
+Impact:
+If a user or a list of users are set as the values for audit_log_exclude_accounts, these
+user(s) will evade being logged in the audit log. This may allow malicious connections or
+query activity to go unnoticed in the audit log.
+Default Value:
+audit_log_exclude_accounts is set to NULL by default.
+
+References:
+1. https://dev.mysql.com/doc/refman/5.7/en/audit-­‐log-­‐plugin-­‐options-­‐
+variables.html#sysvar_audit_log_exclude_accounts 
+
+6.7 Ensure audit_log_include_accounts is set to NULL (Scored)
+Profile Applicability:   Level 1 -­‐ MySQL RDBMS
+Description:
+The audit_log_include_accounts variable enables the administrator to set accounts for
+which events should be logged in the audit log.
+Rationale:
+The audit_log_include_accounts variable has two permitted values, either NULL or a list
+of MySQL accounts. Setting this variable correctly ensures all MySQL users are being logged
+in the audit log.
+Audit:
+To assess this recommendation, execute the following SQL statement:
+SHOW VARIABLES LIKE '%audit_log_include_accounts%';
+Ensure the resulting value is NULL.
+Remediation:
+To remediate this configuration setting, execute the following SQL statement
+SET GLOBAL audit_log_include_accounts = NULL Or set audit_log_include_accounts=NULL in my.cnf.
+Impact:
+If a user or a list of users are set as the values for audit_log_include_accounts, these
+user(s) will ONLY be logged. Other users permitted to access the MySQL Server but not
+listed under the audit_log_include_accounts variable will avoid being logged in the audit
+log. Setting audit_log_include_accounts to NULL ensures no MySQL users excluded from
+the audit log.
+Default Value:
+audit_log_exclude_accounts is set to NULL by default.
+
+References:
+1. https://dev.mysql.com/doc/refman/5.7/en/audit-­‐log-­‐plugin-­‐options-­‐
+variables.html#sysvar_audit_log_include_accounts 
+
+6.8 Ensure audit_log_policy is set to log logins (Scored)
+Profile Applicability:   Level 1 -­‐ MySQL RDBMS
+Description:
+With the audit_log_policy setting the amount of information which is sent to the audit log
+is controlled.  It must be set to log logins.
+Rationale:
+If this setting is set to QUERIES or NONE then connections are not written to the audit log
+file.
+Audit:
+SHOW GLOBAL VARIABLES LIKE 'audit_log_policy'; The result must be LOGINS or ALL.
+Remediation:
+Set audit_log_policy='ALL' or audit_log_policy='LOGINS' in the MySQL configuration
+file and activate the setting by restarting the server or executing SET GLOBAL
+audit_log_policy='ALL'; or SET GLOBAL audit_log_policy='LOGINS';
+Default Value:
+ALL
+References:
+1. https://dev.mysql.com/doc/refman/5.7/en/audit-­‐log-­‐plugin-­‐options-­‐
+variables.html#sysvar_audit_log_policy 
+
+6.9 Ensure audit_log_policy is set to log logins and connections (Scored)
+Profile Applicability:   Level 2 -­‐ MySQL RDBMS
+Description:
+With the audit_log_policy setting the amount of information which is sent to the audit log
+is controlled.  It must be set to log logins and connections.
+Rationale:
+If this setting is set to QUERIES, CONNECTIONS or NONE then either connections or queries
+are not written to the audit log file.
+Audit:
+SHOW GLOBAL VARIABLES LIKE 'audit_log_policy'; The result must be ALL.
+Remediation:
+Set audit_log_policy='ALL' in the MySQL configuration file and activate the setting by
+restarting the server or executing SET GLOBAL audit_log_policy='ALL';
+Default Value:
+ALL
+References:
+1. https://dev.mysql.com/doc/refman/5.7/en/audit-­‐log-­‐plugin-­‐options-­‐
+variables.html#sysvar_audit_log_policy 
+
+6.10 Ensure audit_log_statement_policy is set to ALL (Scored)
+Profile Applicability:   Level 2 -­‐ MySQL RDBMS
+Description:
+This setting controls whether statements are written to the audit log
+Rationale:
+This setting must be set to ALL to ensure all statement information is written to the audit
+log.
+Audit:
+SHOW GLOBAL VARIABLES LIKE 'audit_log_statement_policy';
+It must return ALL
+Remediation:
+Add this to the mysqld section of the mysql configuration file and restart the server:
+audit_log_statement_policy='ALL'
+Impact:
+If this is not set to ALL then audit events related to statements won't be written to the audit
+log file.
+Default Value:
+ALL
+References:
+1. https://dev.mysql.com/doc/refman/5.7/en/audit-­‐log-­‐plugin-­‐options-­‐
+variables.html#sysvar_audit_log_statement_policy 
+
+6.11 Set audit_log_strategy to SYNCHRONOUS or SEMISYNCRONOUS
+(Scored)
+Profile Applicability:   Level 2 -­‐ MySQL RDBMS
+Description:
+The audit_log_strategy must be set to SYNCHRONOUS or SEMISYNCHRONOUS
+Rationale:
+This setting controls how information is written to the audit log. It can be set to
+SYNCHRONOUS to make it fully durable or other settings which are less durable but have
+less performance overhead.
+Audit:
+To assess this recommendation, execute the following SQL statement:
+SHOW GLOBAL VARIABLES LIKE 'audit_log_strategy';
+The result should be SYNCHRONOUS or SEMISYNCHRONOUS
+Remediation:
+To remediate this configuration:
+1. Open the MySQL configuration file (my.cnf)
+2. Navigate to the mysqld section of the configuration file
+3. Set audit_log_strategy='SEMISYNCHRONOUS' (or SYNCHRONOUS)
+Impact:
+If this setting is set to PERFORMANCE or ASYNCHRONOUS audit events might be lost in case of a
+crash or when the server somehow can't write to the audit log file.
+Default Value:
+ASYNCHRONOUS
+References:
+1. https://dev.mysql.com/doc/refman/5.7/en/audit-­‐log-­‐plugin-­‐options-­‐
+variables.html#sysvar_audit_log_strategy 
+
+6.12 Make sure the audit plugin can't be unloaded (Scored)
+Profile Applicability:   Level 1 -­‐ MySQL RDBMS
+Description:
+Set audit_log to FORCE_PLUS_PERMANENT
+Rationale:
+This makes disables unloading on the plugin.
+Audit:
+To assess this recommendation, execute the following SQL statement:
+SELECT LOAD_OPTION FROM information_schema.plugins WHERE PLUGIN_NAME='audit_log';
+The result must be FORCE_PLUS_PERMANENT
+Remediation:
+To remediate this setting, follow these steps:
+1. Open the MySQL configuration file (my.cnf)
+2. Ensure the following line is found in the mysqld section
+audit_log = 'FORCE_PLUS_PERMANENT'
+Impact:
+If someone can unload the plugin it would be possible to perform actions on the database
+without audit events being logged to the audit log. If the audit log plugin can be unloaded
+the audit log can be temporarily or permanently disabled.
+Default Value:
+ON
+References:
+1. https://dev.mysql.com/doc/refman/5.7/en/audit-­‐log-­‐plugin-­‐options-­‐
+variables.html#option_mysqld_audit-­‐log 
+
+7.1 Ensure 'old_passwords' Is Not Set to '1' (Scored)
+Profile Applicability:   Level 1 -­‐ MySQL RDBMS on Linux
+Description:
+This variable controls the password hashing method used by the PASSWORD() function and
+for the IDENTIFIED BY clause of the CREATE USER and GRANT statements.
+The value can be one of the following: 0 -­‐ authenticate with the mysql_native_password plugin
+1 -­‐ authenticate with the mysql_old_password plugin
+2 -­‐ authenticate with the sha256_password plugin
+Rationale:
+The mysql_old_password plugin leverages a very weak hashing algorithm that can be
+quickly brute forced using an offline dictionary attack. See CVE-­‐2003-­‐1480 for additional
+details.
+Audit:
+Execute the following SQL statement to assess this recommendation:
+SHOW VARIABLES WHERE Variable_name = 'old_passwords';
+Ensure the Value field is not set to 1.
+Remediation:
+Configure mysql to leverage the mysql_native_password or sha256_password plugin. For
+more information, see:
+http://dev.mysql.com/doc/refman/5.6/en/password-­‐hashing.html
+http://dev.mysql.com/doc/refman/5.6/en/sha256-­‐authentication-­‐plugin.html
+
+Default Value:
+0
+References:
+1. http://dev.mysql.com/doc/refman/5.7/en/server-­‐system-­‐
+variables.html#sysvar_old_passwords
+2. CVE-­‐2003-­‐1480 
+
+7.2 Ensure 'secure_auth' is set to 'ON' (Scored)
+Profile Applicability:   Level 1 -­‐ MySQL RDBMS   Level 2 -­‐ MySQL RDBMS
+Description:
+This option dictates whether the server will deny connections by clients that attempt to use
+accounts that have their password stored in the mysql_old_password format.
+Rationale:
+Enabling this option will prevent all use of passwords employing the old format (and hence
+insecure communication over the network).
+Audit:
+Execute the following SQL statement and ensure the Value field is not set to ON:
+SHOW VARIABLES WHERE Variable_name = 'secure_auth';
+Remediation:
+Add the following line to [mysqld] portions of the MySQL option file to establish the
+recommended state:
+secure_auth=ON Impact:
+Accounts having credentials stored using the old password format will be unable to login.
+Execute the following command to identify accounts that will be impacted by implementing
+this setting:
+SELECT User,Host FROM mysql.user WHERE plugin='mysql_old_password'; 
+Default Value:
+Before MySQL 5.6.5, this option is disabled by default. As of MySQL 5.6.5, it is enabled by
+default; to disable it, use --skip-secure-auth.
+References:
+1. http://dev.mysql.com/doc/refman/5.7/en/server-­‐
+options.html#option_mysqld_secure-­‐auth 
+
+7.3 Ensure Passwords Are Not Stored in the Global Configuration
 (Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS on Linux   Level 2 -­‐ MySQL RDBMS on Linux
 Description:
@@ -1273,8 +1344,8 @@ Open the MySQL configuration file (e.g. my.cnf)
 Examine the [client] section of the MySQL configuration file and ensure password
 is not employed.
 Remediation:
-Use the mysql_config_editor to store authentication credentials in .mylogin.cnf in
-encrypted form. 
+Use the mysql_config_editor to store authtentication credentials in .mylogin.cnf in
+encrypted form.
 If not possible, use the user-­‐specific options file, .my.cnf., and restricting file access
 permissions to the user identity.
 Impact:
@@ -1282,9 +1353,9 @@ The global configuration is by default readable for all users on the system. Thi
 for global defaults (prompt, port, socket, etc). If a password is present in this file then all
 users on the system may be able to access it.
 References:
-1. http://dev.mysql.com/doc/refman/5.7/en/mysql-­‐config-­‐editor.html
+1. http://dev.mysql.com/doc/refman/5.7/en/mysql-­‐config-­‐editor.html 
 
-7.2 Ensure 'sql_mode' Contains 'NO_AUTO_CREATE_USER' (Scored)
+7.4 Ensure 'sql_mode' Contains 'NO_AUTO_CREATE_USER' (Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS on Linux   Level 2 -­‐ MySQL RDBMS on Linux   Level 1 -­‐ MySQL RDBMS   Level 2 -­‐ MySQL RDBMS
 Description:
 NO_AUTO_CREATE_USER is an option for sql_mode that prevents a GRANT statement from
@@ -1298,12 +1369,12 @@ SELECT @@global.sql_mode;
 SELECT @@session.sql_mode;
 Ensure that each result contains NO_AUTO_CREATE_USER.
 Remediation:
-Perform the following actions to remediate this setting: 
+Perform the following actions to remediate this setting:
 1. Open the MySQL configuration file (my.cnf)
 2. Find the sql_mode setting in the [mysqld] area
-3. Add the NO_AUTO_CREATE_USER to the sql_mode setting
+3. Add the NO_AUTO_CREATE_USER to the sql_mode setting 
 
-7.3 Ensure Passwords Are Set for All MySQL Accounts (Scored)
+7.5 Ensure Passwords Are Set for All MySQL Accounts (Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS   Level 2 -­‐ MySQL RDBMS
 Description:
 Blank passwords allow a user to login without using a password.
@@ -1315,52 +1386,18 @@ Audit:
 Execute the following SQL query to determine if any users have a blank password:
 SELECT User,host
 FROM mysql.user
-WHERE authentication_string='';
+WHERE (plugin IN('mysql_native_password', 'mysql_old_password')
+AND (LENGTH(Password) = 0
+OR Password IS NULL))
+OR (plugin='sha256_password' AND LENGTH(authentication_string) = 0);
 No rows will be returned if all accounts have a password set.
 Remediation:
 For each row returned from the audit procedure, set a password for the given user using
 the following statement (as an example):
-SET PASSWORD FOR <user>@'<host>' = '<clear password>'
-NOTE: Replace <user>, <host>, and <clear password> with appropriate values.
-References:
-1. https://dev.mysql.com/doc/refman/5.7/en/assigning-­‐passwords.html
+SET PASSWORD FOR <user>@'<host>' = PASSWORD('<clear password>')
+NOTE: Replace <user>, <host>, and <clear password> with appropriate values. 
 
-
-
-7.4 Ensure 'default_password_lifetime' Is Less Than Or Equal To '90'
-(Scored)
-Profile Applicability:   Level 1 -­‐ MySQL RDBMS
-Description:
-Password expiry provides passwords with a time bounded lifetime.
-Rationale:
-This benchmark prevents a password being set for an indefinite period, therefore reducing
-the time available a compromised password is known to an attacker.
-Audit:
-Level 1 MySQL RDBMS:
-SHOW VARIABLES LIKE 'default_password_lifetime'; default_password_lifetime should be less than or equal to 90.
-Remediation:
-Level 1 MySQL RDBMS: global policy
-SET GLOBAL default_password_lifetime=90 and in the configuration file: default_password_lifetime=90 As part of Installation and Planning consider set an expiry policy for specific users. Doing
-this will take precedence over the setting specified in default_password_lifetime. For
-example:
-ALTER USER 'jeffrey'@'localhost' PASSWORD EXPIRE INTERVAL 90 DAY;
-Impact:
-Scripted clients or users dependent on automated login in a controlled environment will
-need to consider their authentication procedures. The server will accept the user but the
-user is placed in restricted mode. 
-In restricted mode, operations performed within the session result in an error until the
-user establishes a new account password.
-Default Value:
-global policy:
-default_password_lifetime=360
-per user policy:
-DEFAULT -­‐ as per default_password_lifetime value.
-References:
-1. https://dev.mysql.com/doc/refman/5.7/en/password-­‐expiration-­‐policy.html
-2. https://dev.mysql.com/doc/refman/5.7/en/password-­‐expiration-­‐sandbox-­‐
-mode.html
-
-7.5 Ensure Password Complexity Is in Place (Scored)
+7.6 Ensure Password Policy Is in Place (Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS on Linux   Level 1 -­‐ MySQL RDBMS
 Description:
 Password complexity includes password characteristics such as length, case, length, and
@@ -1372,20 +1409,19 @@ easily be guessed.
 Audit:
 Execute the following SQL statements to assess this recommendation:
 SHOW VARIABLES LIKE 'validate_password%';
-The result set from the above statement should show: 
-validate_password_length should be 14 or more
+The result set from the above statement should show: validate_password_length should be 14 or more
 validate_password_mixed_case_count should be 1 or more
 validate_password_number_count should be 1 or more
-
 validate_password_special_char_count should be 1 or more
 validate_password_policy should be MEDIUM or STRONG
 The following lines should be present in the global configuration:
 plugin-load=validate_password.so
 validate-password=FORCE_PLUS_PERMANENT Check if users have a password which is identical to the username:
-SELECT user,authentication_string,host FROM mysql.user
-WHERE authentication_string=CONCAT('*', UPPER(SHA1(UNHEX(SHA1(user)))));
+SELECT User,Password,Host FROM mysql.user
+WHERE password=CONCAT('*', UPPER(SHA1(UNHEX(SHA1(user)))));
 NOTE: This method is only capable of checking the post-­‐4.1 password format which is also
 known as mysql_native_password.
+
 Remediation:
 Add to the global configuration:
 plugin-load=validate_password.so
@@ -1400,11 +1436,10 @@ username.
 Impact:
 Remediation for this recommendation requires a server restart.
 References:
-1. http://dev.mysql.com/doc/refman/5.7/en/validate-­‐password-­‐plugin.html
+1. http://dev.mysql.com/doc/refman/5.7/en/validate-­‐password-­‐plugin.html 
 
-7.6 Ensure No Users Have Wildcard Hostnames (Scored)
+7.7 Ensure No Users Have Wildcard Hostnames (Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS   Level 2 -­‐ MySQL RDBMS
-
 Description:
 MySQL can make use of host wildcards when granting permissions to users on specific
 databases.  For example, you may grant a given privilege to '<user>'@'%'.
@@ -1418,9 +1453,9 @@ Ensure no rows are returned.
 Remediation:
 Perform the following actions to remediate this setting:
 1. Enumerate all users returned after running the audit procedure
-2. Either ALTER the user's host to be specific or DROP the user
+2. Either ALTER the user's host to be specific or DROP the user 
 
-7.7 Ensure No Anonymous Accounts Exist (Scored)
+7.8 Ensure No Anonymous Accounts Exist (Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS   Level 2 -­‐ MySQL RDBMS
 Description:
 Anonymous accounts are users with empty usernames ('').  Anonymous accounts have no
@@ -1429,7 +1464,7 @@ Rationale:
 Removing anonymous accounts will help ensure that only identified and trusted principals
 are capable of interacting with MySQL.
 Audit:
-Execute the following SQL query to identify anonymous accounts: 
+Execute the following SQL query to identify anonymous accounts:
 SELECT user,host FROM mysql.user WHERE user = '';
 The above query will return zero rows if no anonymous accounts are present.
 Remediation:
@@ -1443,9 +1478,10 @@ change.
 Default Value:
 Using the standard installation script, mysql_install_db, it will create two anonymous
 accounts: one for the host 'localhost' and the other for the network interface's IP address.
+
 References:
 1. http://dev.mysql.com/doc/refman/5.7/en/mysql-­‐secure-­‐installation.html
-2. https://dev.mysql.com/doc/refman/5.6/en/default-­‐privileges.html
+2. https://dev.mysql.com/doc/refman/5.7/en/default-­‐privileges.html 
 
 8.1 Ensure 'have_ssl' Is Set to 'YES' (Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS
@@ -1453,7 +1489,7 @@ Description:
 All network traffic must use SSL/TLS when traveling over untrusted networks.
 Rationale:
 The SSL/TLS-­‐protected MySQL protocol helps to prevent eavesdropping and man-­‐in-­‐the-­‐
-middle attacks. 
+middle attacks.
 Audit:
 Execute the following SQL statements to assess this recommendation:
 SHOW variables WHERE variable_name = 'have_ssl';
@@ -1469,7 +1505,7 @@ Default Value:
 DISABLED
 References:
 1. http://dev.mysql.com/doc/refman/5.7/en/ssl-­‐connections.html
-2. http://dev.mysql.com/doc/refman/5.7/en/ssl-­‐options.html
+2. http://dev.mysql.com/doc/refman/5.7/en/ssl-­‐options.html 
 
 8.2 Ensure 'ssl_type' Is Set to 'ANY', 'X509', or 'SPECIFIED' for All Remote
 Users (Scored)
@@ -1478,7 +1514,6 @@ Description:
 All network traffic must use SSL/TLS when traveling over untrusted networks.
 SSL/TLS should be enforced on a per-­‐user basis for users which enter the system through
 the network.
-
 Rationale:
 The SSL/TLS-­‐protected MySQL protocol helps to prevent eavesdropping and man-­‐in-­‐the-­‐
 middle attacks.
@@ -1496,7 +1531,7 @@ ISSUER, REQUIRE SUBJECT which can be used to further restrict connection options
 Impact:
 When SSL/TLS is enforced then clients which do not use SSL will not be able to connect. If
 the server is not configured for SSL/TLS then accounts for which SSL/TLS is mandatory
-will not be able to connect
+will not be able to connect 
 Default Value:
 Not enforced (ssl_type is empty)
 References:
@@ -1506,25 +1541,26 @@ References:
 9.1 Ensure Replication Traffic Is Secured (Not Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS
 Description:
-The replication traffic between servers should be secured.
+The replication traffic between servers should be secured. Security measures should
+include ensuring the confidentiality and integrity of the traffic, and performing mutual
+authentication between the servers before performing replication.
 Rationale:
-The replication traffic should be secured as it gives access to all transferred information
-and might leak passwords.
+The replication traffic should be secured as it gives access to all transfered information and
+might leak passwords.
 Audit:
-Check if the replication traffic is using 
+Check if the replication traffic is using one or more of the following to provide
+confidentiality and integrity for the traffic, and mutual authentication for the servers: 
 A private network
 A VPN
 SSL/TLS
 A SSH Tunnel
 Remediation:
-Secure the network traffic
-Impact:
-When the replication traffic is not secured someone might be able to capture passwords
-and other sensitive information when sent to the slave.
+Secure the network traffic using one or more technologies to provide confidentiality and
+integrity for the traffic, and mutual authentication for the servers. 
 
 9.2 Ensure 'MASTER_SSL_VERIFY_SERVER_CERT' Is Set to 'YES' or '1'
 (Scored)
-Profile Applicability:   Level 1 -­‐ MySQL RDBMS 
+Profile Applicability:   Level 1 -­‐ MySQL RDBMS
 Description:
 In the MySQL slave context the setting MASTER_SSL_VERIFY_SERVER_CERT indicates whether
 the slave should verify the master's certificate.  This configuration item may be set to Yes or
@@ -1549,11 +1585,9 @@ explicitly told to keep them
 When CHANGE MASTER TO is invoked, some information is dumped to the error log
 (previous values for MASTER_HOST, MASTER_PORT, MASTER_LOG_FILE, and
 MASTER_LOG_POS)
-Invoking CHANGE MASTER TO will implicitly commit any ongoing transactions
+ Invoking CHANGE MASTER TO will implicitly commit any ongoing transactions
 References:
-1. https://dev.mysql.com/doc/refman/5.6/en/change-­‐master-­‐to.html
-
-
+1. https://dev.mysql.com/doc/refman/5.7/en/change-­‐master-­‐to.html 
 
 9.3 Ensure 'master_info_repository' Is Set to 'TABLE' (Scored)
 Profile Applicability:   Level 2 -­‐ MySQL RDBMS
@@ -1609,7 +1643,7 @@ Impact:
 When the SUPER privilege is denied to a given user, that user will be unable to take
 advantage of certain capabilities, such as certain mysqladmin options. 
 References:
-1. http://dev.mysql.com/doc/refman/5.7/en/privileges-­‐provided.html#priv_super
+1. http://dev.mysql.com/doc/refman/5.7/en/privileges-­‐provided.html#priv_super 
 
 9.5 Ensure No Replication Users Have Wildcard Hostnames (Scored)
 Profile Applicability:   Level 1 -­‐ MySQL RDBMS
@@ -1627,4 +1661,3 @@ Remediation:
 Perform the following actions to remediate this setting:
 1. Enumerate all users returned after running the audit procedure
 2. Either ALTER the user's host to be specific or DROP the user 
-

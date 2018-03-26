@@ -11,6 +11,7 @@ class TextCleaner
   # Cleans control information from passed in file
   def clean_controls(extracted_data)
     controls_data = isolate_controls_data(extracted_data)
+    p controls_data
     clean_section_header = remove_section_header(controls_data)
     clean_whitespace = remove_newline_in_controls(clean_section_header)
     clean_special = remove_special(clean_whitespace)
@@ -37,7 +38,7 @@ class TextCleaner
 
   # Removes section headers for each control
   def remove_section_header(extracted_data)
-    clean_section_header = extracted_data.gsub(/\s\n\d{1}\s.*(?:.*\n)*?(?=\d\.\d)/, "\n\n").to_s
+    clean_section_header = extracted_data.gsub(/(?<!•)\s\n\d{1}\s.*(?:.*\n)*?(?=\d\.\d)/, "\n\n").to_s
     return clean_section_header
   end
 
