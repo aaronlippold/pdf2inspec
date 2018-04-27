@@ -99,6 +99,7 @@ class Pdf2Inspec
   def parse_controls
     @transformed_data.each do |contr|
       print '.'
+
       nist = find_nist(contr[:cis]) unless contr[:cis] == "No CIS Control"
       control = Inspec::Control.new
       control.id = 'M-' + contr[:title].split(' ')[0]

@@ -1,3 +1,7 @@
+#!/usr/local/bin/ruby
+# encoding: utf-8
+# author: Matthew Dromazos dromazmj@gmail.com
+
 require 'parslet'
 require 'parslet/convenience'
 require 'pp'
@@ -275,6 +279,20 @@ class Trans < Parslet::Transform
   rule(:header => simple(:header), :applicability => sequence(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
        :audit => sequence(:audit)) { {:title => header.to_s , :level => applicability[0].to_s,
         :descr => description[0].to_s + rationale[0].to_s, :check => audit[0].to_s} }
+  rule(:header => simple(:header), :applicability => sequence(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
+       :audit => sequence(:audit), :remediation => sequence(:remediation), :default_value => sequence(:default_value),
+       :references => sequence(:references), :cis_controls => sequence(:cis_controls)) { {:title => header.to_s , :level => applicability[0].to_s,
+        :descr => description[0].to_s + rationale[0].to_s, :check => audit[0].to_s, :fix => remediation[0].to_s, :default => default_value[0].to_s,
+        :ref => references[0].to_s, :cis => cis_controls[0].to_s} }
+  rule(:header => simple(:header), :applicability => sequence(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
+       :audit => sequence(:audit), :remediation => sequence(:remediation), :impact => sequence(:impact),
+       :references => sequence(:references), :cis_controls => sequence(:cis_controls)) { {:title => header.to_s , :level => applicability[0].to_s,
+        :descr => description[0].to_s + rationale[0].to_s, :check => audit[0].to_s, :fix => remediation[0].to_s, :impact => impact[0].to_s,
+        :ref => references[0].to_s, :cis => cis_controls[0].to_s} }
+  rule(:header => simple(:header), :applicability => sequence(:applicability), :description => sequence(:description), :rationale => sequence(:rationale),
+       :audit => sequence(:audit), :remediation => sequence(:remediation), :references => sequence(:references), 
+       :cis_controls => sequence(:cis_controls)) { {:title => header.to_s , :level => applicability[0].to_s, :descr => description[0].to_s + rationale[0].to_s, :check => audit[0].to_s, 
+         :fix => remediation[0].to_s, :ref => references[0].to_s, :cis => cis_controls[0].to_s} }
 end
 
 class PrepareData
@@ -315,6 +333,8 @@ class PrepareData
         references = ctrl[:ref].split("\n")
         references.each do |ref|
           match = ref.scan(/(?<=#)\d{1,}\.\d{1,}/).map(&:inspect).join(',').gsub(/\"/, '').gsub(/,/, ' ')
+          require 'pry'
+          binding.pry
           if match.length > 0
             puts match
             ctrl[:cis] = match.split(' ')
@@ -325,6 +345,8 @@ class PrepareData
         end
       elsif !ctrl[:cis] and !ctrl[:ref]
         ctrl[:cis] = 'No CIS Control'
+      elsif ctrl[:cis] and ctrl[:ref]
+        ctrl[:cis] = ctrl[:cis].scan(/^\d{1,}[\.\d{1,}]*/)
       end
     end
   end
